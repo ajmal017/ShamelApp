@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "77000665945",
+    "firebase_url": "https://shamelapp-93add.firebaseio.com",
+    "project_id": "shamelapp-93add",
+    "storage_bucket": "shamelapp-93add.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77000665945:android:cf8a500905bda40ec73a48",
+        "android_client_info": {
+          "package_name": "com.arabdevelopers.shamelapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77000665945-uoularus7otqqrg0pb0gom6dtutrbion.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.arabdevelopers.shamelapp",
+            "certificate_hash": "6616577a7e310a6aae058246a826c73910eff6d4"
+          }
+        },
+        {
+          "client_id": "77000665945-l18pdi8a5qpdj47qtc6p748l369pald5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEh-Z8SnL79KHg4M48-IZjE0j_lJzag5I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77000665945-l18pdi8a5qpdj47qtc6p748l369pald5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

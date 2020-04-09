@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <data>
+        <variable
+            name="action"
+            type="com.arabdevelopers.shamelapp.interfaces.Listeners.SettingActions" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:fillViewport="true"
+        android:background="@color/colorPrimary"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <ImageView
+                android:layout_width="130dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/logo"
+                android:background="@drawable/small_rounded_white"
+
+                />
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:textSize="17sp"
+                android:textColor="@color/white"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                >
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:onClick="@{()->action.openWhatsApp()}"
+                    >
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_support"
+                        android:tint="@color/white"
+                        android:clickable="false"
+                        android:longClickable="false"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:text="@string/complaints"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:gravity="center"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:onClick="@{()->action.changeLanguage()}"
+
+                    >
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_language"
+                        android:tint="@color/white"
+                        android:clickable="false"
+                        android:longClickable="false"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:text="@string/change_language"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:gravity="center"
+
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:onClick="@{()->action.contactUs()}"
+
+
+                    >
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_contact"
+                        android:tint="@color/white"
+                        android:clickable="false"
+                        android:longClickable="false"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:text="@string/contact_us"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:gravity="center"
+                        />
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                >
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:onClick="@{()->action.terms()}"
+
+                    >
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_list"
+                        android:tint="@color/white"
+                        android:clickable="false"
+                        android:longClickable="false"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:text="@string/terms_and_conditions"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:gravity="center"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:onClick="@{()->action.privacyPolicy()}"
+
+
+                    >
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_list"
+                        android:tint="@color/white"
+                        android:clickable="false"
+                        android:longClickable="false"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:text="@string/privacy"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:gravity="center"
+
+                        />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:onClick="@{()->action.logout()}"
+
+                    >
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_logout"
+                        android:tint="@color/white"
+                        android:clickable="false"
+                        android:longClickable="false"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:text="@string/logout"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:gravity="center"
+
+                        />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                >
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:onClick="@{()->action.addAds()}"
+
+                    >
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_plus"
+                        android:tint="@color/white"
+                        android:clickable="false"
+                        android:longClickable="false"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:text="@string/add_ads"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:gravity="center"
+                        />
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                >
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/twitter"
+                    android:onClick="@{()->action.openTwitter()}"
+
+                    />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/snapchat"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:onClick="@{()->action.openSnapChat()}"
+
+                    />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/instagram"
+                    android:onClick="@{()->action.openInstagram()}"
+
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</layout>
