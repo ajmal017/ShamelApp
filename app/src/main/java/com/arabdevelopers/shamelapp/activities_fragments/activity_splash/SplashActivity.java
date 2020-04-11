@@ -2,14 +2,14 @@ package com.arabdevelopers.shamelapp.activities_fragments.activity_splash;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import com.arabdevelopers.shamelapp.R;
+import com.arabdevelopers.shamelapp.activities_fragments.activity_home.HomeActivity;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_login.LoginActivity;
 import com.arabdevelopers.shamelapp.databinding.ActivitySplashBinding;
 import com.arabdevelopers.shamelapp.language.Language;
@@ -20,7 +20,6 @@ import io.paperdb.Paper;
 
 public class SplashActivity extends AppCompatActivity {
     private ActivitySplashBinding binding;
-    private Animation animation;
     private Preferences preferences;
 
     @Override
@@ -32,39 +31,36 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash);
-        animation = AnimationUtils.loadAnimation(this,R.anim.lanuch);
         preferences = Preferences.getInstance();
-        binding.imageLogo.startAnimation(animation);
 
-
-
-        animation.setAnimationListener(new Animation.AnimationListener() {
+        String path = "android.resource://"+getPackageName()+"/"+R.raw.splash_vid;
+        binding.videoView.setVideoPath(path);
+        binding.videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                binding.videoView.start();
             }
+        });
 
+        binding.videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
-            public void onAnimationEnd(Animation animation) {
+            public void onCompletion(MediaPlayer mediaPlayer) {
+
                 String session = preferences.getSession(SplashActivity.this);
 
                 if (session.equals(Tags.session_login))
                 {
-                   /* Intent intent = new Intent(SplashActivity.this, SyncDataActivity.class);
+                    Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
                     startActivity(intent);
-                    finish();*/
+                    finish();
                 }else
-                    {
-                        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
+                {
+                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
+
     }
 }

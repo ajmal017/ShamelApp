@@ -1,6 +1,5 @@
 package com.arabdevelopers.shamelapp.general_ui_method;
 
-import android.net.Uri;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -8,12 +7,11 @@ import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
 
+import com.arabdevelopers.shamelapp.tags.Tags;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class GeneralMethod {
@@ -31,6 +29,23 @@ public class GeneralMethod {
         }
     }
 
+    @BindingAdapter("imageEndPoint")
+    public static void displayImage(View view ,String imageEndPoint)
+    {
+        if (view instanceof CircleImageView)
+        {
+            CircleImageView imageView = (CircleImageView) view;
+            Picasso.get().load(Tags.base_url+imageEndPoint).fit().into(imageView);
+        }else if (view instanceof RoundedImageView)
+        {
+            RoundedImageView imageView = (RoundedImageView) view;
+            Picasso.get().load(Tags.base_url+imageEndPoint).fit().into(imageView);
+        }else if (view instanceof ImageView)
+        {
+            ImageView imageView = (ImageView) view;
+            Picasso.get().load(Tags.base_url+imageEndPoint).fit().into(imageView);
+        }
+    }
 
 
 

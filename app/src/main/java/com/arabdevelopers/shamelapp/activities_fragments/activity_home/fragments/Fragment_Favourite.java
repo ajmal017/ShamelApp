@@ -23,7 +23,7 @@ public class Fragment_Favourite extends Fragment {
     private HomeActivity activity;
     private FragmentFavouriteBinding binding;
     private Preferences preferences;
-    private UserModel userModel;
+    private UserModel.User userModel;
 
     private String lang;
 

@@ -10,7 +10,7 @@
             type="String" />
         <variable
             name="userModel"
-            type="com.arabdevelopers.shamelapp.models.UserModel" />
+            type="com.arabdevelopers.shamelapp.models.UserModel.User" />
 
 
     </data>
@@ -137,6 +137,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:textSize="14sp"
+                            android:text="@{userModel.name}"
                             />
 
                     </LinearLayout>
@@ -203,6 +204,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:textSize="14sp"
+                            android:text='@{userModel.phone_code+" "+userModel.phone}'
 
                             />
 
@@ -272,7 +274,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:textSize="14sp"
-
+                            android:text='@{userModel.gender.equals("male")?@string/male:@string/female}'
                             />
 
 

@@ -1,11 +1,24 @@
 package com.arabdevelopers.shamelapp.services;
 
 
+import com.arabdevelopers.shamelapp.models.AdsDataModel;
+import com.arabdevelopers.shamelapp.models.AppDataModel;
+import com.arabdevelopers.shamelapp.models.MainDeptSliderData;
 import com.arabdevelopers.shamelapp.models.PlaceGeocodeData;
 import com.arabdevelopers.shamelapp.models.PlaceMapDetailsData;
+import com.arabdevelopers.shamelapp.models.SubDeptSliderData;
+import com.arabdevelopers.shamelapp.models.UserModel;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface Service {
@@ -22,4 +35,46 @@ public interface Service {
     Call<PlaceGeocodeData> getGeoData(@Query(value = "latlng") String latlng,
                                       @Query(value = "language") String language,
                                       @Query(value = "key") String key);
+
+    @FormUrlEncoded
+    @POST("api/register")
+    Call<UserModel> signUpWithoutImage(@Field("name") String name,
+                                       @Field("phone_code") String phone_code,
+                                       @Field("phone") String phone,
+                                       @Field("gender") String gender,
+                                       @Field("type") String type
+    );
+
+    @Multipart
+    @POST("api/register")
+    Call<UserModel> signUpWithImage(@Part("name") RequestBody name,
+                                    @Part("phone_code") RequestBody phone_code,
+                                    @Part("phone") RequestBody phone,
+                                    @Part("gender") RequestBody gender,
+                                    @Part("type") RequestBody type,
+                                    @Part MultipartBody.Part image
+    );
+
+    @FormUrlEncoded
+    @POST("api/login")
+    Call<UserModel> login(@Field("phone_code") String phone_code,
+                          @Field("phone") String phone);
+
+    @GET("api/main-page")
+    Call<MainDeptSliderData> getSliders_MainDepartments();
+
+    @GET("api/show-setting")
+    Call<AppDataModel> getSettings(@Header("lang") String lang);
+
+    @GET("api/sub-page")
+    Call<SubDeptSliderData> getSliders_SubDepartments(@Query("department_id") int department_id);
+
+    @GET("api/advertisements-by-sub-department")
+    Call<AdsDataModel> getAds(@Query("pagination_status") String pagination_status,
+                              @Query("per_link_") int per_link,
+                              @Query("page") int page,
+                              @Query("sub_department_id") int sub_department_id,
+                              @Query("user_id") String user_id
+    );
+
 }

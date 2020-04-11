@@ -2,6 +2,7 @@ package com.arabdevelopers.shamelapp.activities_fragments.activity_signup;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -20,18 +22,28 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.arabdevelopers.shamelapp.R;
+import com.arabdevelopers.shamelapp.activities_fragments.activity_home.HomeActivity;
 import com.arabdevelopers.shamelapp.databinding.ActivitySignUpBinding;
 import com.arabdevelopers.shamelapp.interfaces.Listeners;
 import com.arabdevelopers.shamelapp.language.Language;
 import com.arabdevelopers.shamelapp.models.SignUpModel;
+import com.arabdevelopers.shamelapp.models.UserModel;
+import com.arabdevelopers.shamelapp.preferences.Preferences;
+import com.arabdevelopers.shamelapp.remote.Api;
 import com.arabdevelopers.shamelapp.share.Common;
 import com.arabdevelopers.shamelapp.tags.Tags;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 import io.paperdb.Paper;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignUpActivity extends AppCompatActivity implements Listeners.SignUpListener {
     private ActivitySignUpBinding binding;
@@ -41,6 +53,7 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
     private final int READ_REQ = 1, CAMERA_REQ = 2;
     private Uri uri = null;
     private SignUpModel signUpModel;
+    private Preferences preferences;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -58,6 +71,7 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
     }
 
     private void initView() {
+        preferences = Preferences.getInstance();
         signUpModel = new SignUpModel();
         binding.setModel(signUpModel);
         binding.setListener(this);
@@ -233,7 +247,136 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
     }
 
     private void signUp() {
+        if (uri==null)
+        {
+            signUpWithoutImage();
+        }else
+            {
+                signUpWithImage();
+            }
+    }
+
+    private void signUpWithoutImage() {
+        ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
+        dialog.setCancelable(false);
+        dialog.show();
+        Api.getService(Tags.base_url)
+                .signUpWithoutImage(signUpModel.getName(),signUpModel.getPhone_code(),signUpModel.getPhone(),signUpModel.getGender(),Tags.client)
+                .enqueue(new Callback<UserModel>() {
+                    @Override
+                    public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful()&&response.body()!=null)
+                        {
+                            preferences.create_update_userdata(SignUpActivity.this,response.body().getData());
+                            navigateToHomeActivity();
+                        }else
+                        {
+                            if (response.code()==500)
+                            {
+                                Toast.makeText(SignUpActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }else if (response.code()==422)
+                            {
+                                Toast.makeText(SignUpActivity.this, R.string.user_found, Toast.LENGTH_SHORT).show();
+                            }else
+                            {
+                                Toast.makeText(SignUpActivity.this,getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+
+                            try {
+                                Log.e("error",response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserModel> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+                            if (t.getMessage() != null) {
+                                Log.e("msg_category_error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(SignUpActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(SignUpActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });
+    }
+
+    private void signUpWithImage() {
+
+        ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestBody name_part = Common.getRequestBodyText(signUpModel.getName());
+        RequestBody phone_code_part = Common.getRequestBodyText(signUpModel.getPhone_code());
+        RequestBody phone_part = Common.getRequestBodyText(signUpModel.getPhone());
+        RequestBody user_type_part = Common.getRequestBodyText(Tags.client);
+        RequestBody gender_part = Common.getRequestBodyText(signUpModel.getGender());
+
+        MultipartBody.Part image = Common.getMultiPart(this,uri,"image");
 
 
+        Api.getService(Tags.base_url)
+                .signUpWithImage(name_part,phone_code_part,phone_part,gender_part,user_type_part,image)
+                .enqueue(new Callback<UserModel>() {
+                    @Override
+                    public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful()&&response.body()!=null)
+                        {
+                            preferences.create_update_userdata(SignUpActivity.this,response.body().getData());
+                            navigateToHomeActivity();
+                        }else
+                        {
+                            if (response.code()==500)
+                            {
+                                Toast.makeText(SignUpActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }else if (response.code()==422)
+                            {
+                                Toast.makeText(SignUpActivity.this, R.string.user_found, Toast.LENGTH_SHORT).show();
+
+                            }else
+                            {
+                                Toast.makeText(SignUpActivity.this,getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserModel> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+                            if (t.getMessage() != null) {
+                                Log.e("msg_category_error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(SignUpActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(SignUpActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });
+
+    }
+
+    private void navigateToHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -1,9 +1,11 @@
 package com.arabdevelopers.shamelapp.activities_fragments.activity_verification_code;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,8 +16,11 @@ import com.arabdevelopers.shamelapp.R;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_signup.SignUpActivity;
 import com.arabdevelopers.shamelapp.databinding.ActivityVerificationCodeBinding;
 import com.arabdevelopers.shamelapp.language.Language;
+import com.arabdevelopers.shamelapp.models.UserModel;
 import com.arabdevelopers.shamelapp.preferences.Preferences;
+import com.arabdevelopers.shamelapp.remote.Api;
 import com.arabdevelopers.shamelapp.share.Common;
+import com.arabdevelopers.shamelapp.tags.Tags;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -27,6 +32,9 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VerificationCodeActivity extends AppCompatActivity {
     private ActivityVerificationCodeBinding binding;
@@ -161,7 +169,6 @@ public class VerificationCodeActivity extends AppCompatActivity {
 
         if (verificationId!=null)
         {
-            navigateToSignUpActivity();
 
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId,code);
             mAuth.signInWithCredential(credential)
@@ -177,34 +184,31 @@ public class VerificationCodeActivity extends AppCompatActivity {
             });
         }else
             {
-                navigateToSignUpActivity();
-
-                //login();
+                login();
             }
 
     }
 
     private void login() {
 
-       /* ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
+        ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
         dialog.setCancelable(false);
         dialog.show();
         Api.getService(Tags.base_url)
-                .login(phone,phone_code)
+                .login(phone_code,phone)
                 .enqueue(new Callback<UserModel>() {
                     @Override
                     public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                         dialog.dismiss();
                         if (response.isSuccessful()&&response.body()!=null)
                         {
-                            preferences.create_update_user_date(VerificationCodeActivity.this,response.body());
-                            navigateToSyncActivity();
+                            preferences.create_update_userdata(VerificationCodeActivity.this,response.body().getData());
                         }else
                         {
                             if (response.code()==500)
                             {
                                 Toast.makeText(VerificationCodeActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
-                            }else if (response.code()==404)
+                            }else if (response.code()==401)
                             {
                                 navigateToSignUpActivity();
                             }else
@@ -232,7 +236,7 @@ public class VerificationCodeActivity extends AppCompatActivity {
                             Log.e("Error",e.getMessage()+"__");
                         }
                     }
-                });*/
+                });
 
     }
 

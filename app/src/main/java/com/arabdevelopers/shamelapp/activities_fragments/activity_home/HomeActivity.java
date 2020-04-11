@@ -1,9 +1,11 @@
 package com.arabdevelopers.shamelapp.activities_fragments.activity_home;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -17,11 +19,14 @@ import com.arabdevelopers.shamelapp.activities_fragments.activity_home.fragments
 import com.arabdevelopers.shamelapp.activities_fragments.activity_home.fragments.Fragment_Profile;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_login.LoginActivity;
 import com.arabdevelopers.shamelapp.databinding.ActivityHomeBinding;
+import com.arabdevelopers.shamelapp.databinding.DialogLanguageBinding;
 import com.arabdevelopers.shamelapp.language.Language;
 import com.arabdevelopers.shamelapp.models.UserModel;
 import com.arabdevelopers.shamelapp.preferences.Preferences;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+
+import java.util.Locale;
 
 import io.paperdb.Paper;
 
@@ -33,7 +38,7 @@ public class HomeActivity extends AppCompatActivity {
     private Fragment_More fragment_more;
     private Fragment_Profile fragment_profile;
     private Preferences preferences;
-    private UserModel userModel;
+    private UserModel.User userModel;
 
 
     protected void attachBaseContext(Context newBase) {
@@ -62,6 +67,7 @@ public class HomeActivity extends AppCompatActivity {
         userModel = preferences.getUserData(this);
         Paper.init(this);
         setUpBottomNavigation();
+        binding.flLanguage.setOnClickListener(view -> createLangDialog());
 
     }
 
@@ -277,6 +283,50 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+
+    private void createLangDialog() {
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .create();
+
+        DialogLanguageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_language, null, false);
+        String lang = Paper.book().read("lang", Locale.getDefault().getLanguage());
+        if (lang.equals("ar")) {
+            binding.rbAr.setChecked(true);
+        } else {
+            binding.rbEn.setChecked(true);
+
+        }
+        binding.btnCancel.setOnClickListener((v) ->
+                dialog.dismiss()
+
+        );
+        binding.rbAr.setOnClickListener(view -> {
+            dialog.dismiss();
+            new Handler()
+                    .postDelayed(() -> {
+                        if (!lang.equals("ar"))
+                        {
+                            refreshActivity("ar");
+                        }
+                    },200);
+        });
+        binding.rbEn.setOnClickListener(view -> {
+            dialog.dismiss();
+            new Handler()
+                    .postDelayed(() -> {
+                        if (!lang.equals("en"))
+                        {
+                            refreshActivity("en");
+                        }
+                    },200);
+        });
+        dialog.getWindow().getAttributes().windowAnimations = R.style.dialog_congratulation_animation;
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_window_bg);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setView(binding.getRoot());
+        dialog.show();
     }
 
 

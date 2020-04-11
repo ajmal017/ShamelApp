@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    >
+    <data>
+
+
+        <variable
+            name="backListener"
+            type="com.arabdevelopers.shamelapp.interfaces.Listeners.BackListener" />
+        <variable
+            name="lang"
+            type="String"
+
+            />
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="model"
+            type="com.arabdevelopers.shamelapp.models.AdsModel" />
+
+        <variable
+            name="listener"
+            type="com.arabdevelopers.shamelapp.interfaces.Listeners.AdDetailsActions" />
+
+        <import type="android.view.View"/>
+    </data>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:contentInsetEnd="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:onClick="@{()->backListener.back()}"
+                android:orientation="horizontal"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+
+                >
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:clickable="false"
+                    android:longClickable="false"
+                    android:padding="8dp"
+                    android:rotation='@{lang.equals("ar")?180:0}'
+                    android:src="@drawable/ic_left_arrow"
+                    android:tint="@color/white"
+
+                    />
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:clickable="false"
+                    android:longClickable="false"
+                    android:text="@{title}"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+
+                    />
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+
+
+
+
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:fitsSystemWindows="true"
+                android:scrollbars="none"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="230dp"
+                        >
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="170dp"
+                            imageEndPoint="@{model.image}"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_gravity="bottom"
+                            android:layout_marginBottom="10dp"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="20dp"
+                            android:weightSum="1"
+                            >
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                app:civ_circle_background_color="@color/white"
+                                app:civ_border_width="1dp"
+                                app:civ_border_color="@color/colorPrimary"
+                                android:src="@drawable/user_avatar"
+                                imageEndPoint="@{model.user.image}"
+                                />
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_gravity="bottom"
+                                    android:maxLines="2"
+                                    android:textColor="@color/text_title"
+                                    android:textSize="15sp"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
+                                    android:text="@{model.user.name}"
+
+                                    />
+                            <CheckBox
+                                android:id="@+id/checkbox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:button="@drawable/checkbox_bg"
+                                android:checked="@{model.user_like!=null?true:false}"
+                                android:onClick="@{()->listener.like_dislike()}"
+
+                                />
+
+                        </LinearLayout>
+
+
+                    </FrameLayout>
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="20dp"
+                        android:textColor="@color/text_title"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:text="@{model.name}"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/black_trans"
+                        android:textSize="15sp"
+                        android:text="@{model.content}"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="20dp"
+                        >
+                        <FrameLayout
+                            android:id="@+id/flInfo"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@color/second"
+                            android:onClick="@{()->listener.info()}"
+
+                            >
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:orientation="horizontal"
+                                >
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_phone_call"
+                                    android:tint="@color/white"
+
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="5dp"
+                                    android:layout_marginEnd="5dp"
+                                    android:textSize="13sp"
+                                    android:textColor="@color/white"
+                                    android:text="@string/contact_info"
+                                    />
+
+                            </LinearLayout>
+                        </FrameLayout>
+                        <Space
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"/>
+                        <FrameLayout
+                            android:id="@+id/flLocation"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@color/colorPrimary"
+                            android:onClick="@{()->listener.map()}"
+
+                            >
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:orientation="horizontal"
+                                >
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_map"
+                                    android:tint="@color/white"
+
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="5dp"
+                                    android:layout_marginEnd="5dp"
+                                    android:textSize="13sp"
+                                    android:textColor="@color/white"
+                                    android:text="@string/location"
+                                    />
+
+                            </LinearLayout>
+                        </FrameLayout>
+
+
+
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="20dp"
+                        >
+
+                        <LinearLayout
+                            android:id="@+id/llInfo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            >
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:onClick="@{()->listener.call()}"
+
+
+                                >
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_call"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
+                                    android:textColor="@color/black"
+                                    android:textSize="15sp"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    android:text='@{model.user.phone}'
+                                    />
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="5dp"
+                                android:visibility="@{model.user.other_phone!=null?View.VISIBLE:View.GONE,default=gone}"
+                                android:onClick="@{()->listener.call2()}"
+
+                                >
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_phone_call"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
+                                    android:textColor="@color/black"
+                                    android:textSize="15sp"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    android:text="@{model.user.other_phone}"
+                                    />
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="5dp"
+                                android:visibility="@{model.user.whats_up!=null?View.VISIBLE:View.GONE,default=gone}"
+                                android:onClick="@{()->listener.whatApp()}"
+
+                                >
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/whatsapp"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
+                                    android:textColor="@color/black"
+                                    android:textSize="15sp"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    android:text="@{model.user.whats_up}"
+                                    />
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="5dp"
+                                android:visibility="@{model.user.facebook!=null?View.VISIBLE:View.GONE,default=gone}"
+                                android:onClick="@{()->listener.facebook()}"
+
+                                >
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/facebook"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
+                                    android:textColor="@color/black"
+                                    android:textSize="15sp"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    android:text="@string/facebook"
+                                    />
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="5dp"
+                                android:visibility="@{model.user.twitter!=null?View.VISIBLE:View.GONE,default=gone}"
+                                android:onClick="@{()->listener.twitter()}"
+
+                                >
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/twitter"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
+                                    android:textColor="@color/black"
+                                    android:textSize="15sp"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    android:text="@string/twitter"
+                                    />
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="5dp"
+                                android:visibility="@{model.user.instagram!=null?View.VISIBLE:View.GONE,default=gone}"
+                                android:onClick="@{()->listener.instagram()}"
+
+                                >
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/instagram"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
+                                    android:textColor="@color/black"
+                                    android:textSize="15sp"
+                                    android:clickable="false"
+                                    android:longClickable="false"
+                                    android:text="@string/instagram"
+                                    />
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:id="@+id/flMap"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            >
+                            <fragment
+
+                                android:id="@+id/map"
+                                android:layout_width="match_parent"
+                                android:layout_height="300dp"
+                                android:name="com.arabdevelopers.shamelapp.activities_fragments.FragmentMapTouchListener"
+
+                                />
+                        </FrameLayout>
+
+
+                    </FrameLayout>
+
+                </LinearLayout>
+            </ScrollView>
+
+
+
+
+    </LinearLayout>
+
+
+</layout>

@@ -87,4 +87,13 @@
     <string name="sub_department">إختر القسم الفرعي</string>
     <string name="ads_details">تفاصيل الاعلان</string>
     <string name="location_on_map">الموقع على الخريطة</string>
+    <string name="whats_not_av">غير متوفر الان</string>
+    <string name="inv_whatsapp">رقم الواتس اب غير صحيح</string>
+    <string name="inv_url">رابط غير صحيح</string>
+    <string name="contact_info">معلومات الاتصال</string>
+    <string name="location">الموقع</string>
+    <string name="facebook">فيس بوك</string>
+    <string name="twitter">تويتر</string>
+    <string name="instagram">إنستجرام</string>
+    <string name="add_ad">أضف إعلانك</string>
 </resources>

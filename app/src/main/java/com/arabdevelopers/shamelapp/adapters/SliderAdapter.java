@@ -48,8 +48,9 @@ public class SliderAdapter extends PagerAdapter {
         View view = inflater.inflate(R.layout.slider_row,container,false);
         ImageView image = view.findViewById(R.id.image);
         ProgressBar progressBar = view.findViewById(R.id.progBar);
+        SliderModel sliderModel = list.get(position);
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(context,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
-        Picasso.get().load(Uri.parse(Tags.IMAGE_URL+"")).fit().into(image, new Callback() {
+        Picasso.get().load(Uri.parse(Tags.IMAGE_URL+sliderModel.getImage())).fit().into(image, new Callback() {
             @Override
             public void onSuccess() {
                 progressBar.setVisibility(View.GONE);
@@ -57,7 +58,6 @@ public class SliderAdapter extends PagerAdapter {
 
             @Override
             public void onError(Exception e) {
-                progressBar.setVisibility(View.GONE);
 
             }
         });

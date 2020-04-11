@@ -26,7 +26,7 @@ public class Fragment_Profile extends Fragment {
     private String lang;
 
     private Preferences preferences;
-    private UserModel userModel;
+    private UserModel.User userModel;
 
     public static Fragment_Profile newInstance() {
         return new Fragment_Profile();

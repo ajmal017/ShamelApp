@@ -39,6 +39,28 @@
                 android:textSize="16sp" />
 
             <FrameLayout
+                android:id="@+id/flLanguage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical|start"
+
+                >
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:clickable="false"
+                    android:longClickable="false"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_language"
+                    android:tint="@color/white" />
+
+
+
+            </FrameLayout>
+
+            <FrameLayout
                 android:id="@+id/flNotification"
                 android:layout_width="50dp"
                 android:layout_height="50dp"

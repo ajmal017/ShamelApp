@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -13,19 +16,22 @@ import com.arabdevelopers.shamelapp.R;
 import com.arabdevelopers.shamelapp.databinding.ActivityAboutAppBinding;
 import com.arabdevelopers.shamelapp.interfaces.Listeners;
 import com.arabdevelopers.shamelapp.language.Language;
+import com.arabdevelopers.shamelapp.models.AppDataModel;
+import com.arabdevelopers.shamelapp.remote.Api;
+import com.arabdevelopers.shamelapp.tags.Tags;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import io.paperdb.Paper;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AboutAppActivity extends AppCompatActivity implements Listeners.BackListener{
     private ActivityAboutAppBinding binding;
     private String lang;
     private int type;
-
-
-
-
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -75,34 +81,23 @@ public class AboutAppActivity extends AppCompatActivity implements Listeners.Bac
     private void getAppData()
     {
 
-       /* Api.getService(Tags.base_url)
-                .getSetting(lang)
+        Api.getService(Tags.base_url)
+                .getSettings(lang)
                 .enqueue(new Callback<AppDataModel>() {
                     @Override
                     public void onResponse(Call<AppDataModel> call, Response<AppDataModel> response) {
                         binding.progBar.setVisibility(View.GONE);
                         if (response.isSuccessful() && response.body() != null) {
-                            if (lang.equals("ar"))
+
+                            if (type==1)
                             {
-                                if (type==1)
-                                {
-                                    binding.setContent(response.body().getSettings().getAr_termis_condition());
-                                }else
-                                    {
-                                        binding.setContent(response.body().getSettings().getAr_about());
-
-                                    }
+                                binding.setContent(response.body().getSettings().getTermis_condition());
                             }else
-                                {
-                                    if (type==1)
-                                    {
-                                        binding.setContent(response.body().getSettings().getEn_termis_condition());
-                                    }else
-                                    {
-                                        binding.setContent(response.body().getSettings().getEn_about());
+                            {
+                                binding.setContent(response.body().getSettings().getAbout());
 
-                                    }
-                                }
+                            }
+
                         } else {
                             try {
 
@@ -138,7 +133,7 @@ public class AboutAppActivity extends AppCompatActivity implements Listeners.Bac
                         } catch (Exception e) {
                         }
                     }
-                });*/
+                });
 
     }
 

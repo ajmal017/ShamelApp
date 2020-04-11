@@ -81,4 +81,13 @@
     <string name="sub_department">Sub department</string>
     <string name="ads_details">Ads details</string>
     <string name="location_on_map">Location on map</string>
+    <string name="whats_not_av">Not available</string>
+    <string name="inv_whatsapp">Invalid whatsApp number</string>
+    <string name="inv_url">Invalid url</string>
+    <string name="contact_info">Contact info</string>
+    <string name="location">Location</string>
+    <string name="facebook">Facebook</string>
+    <string name="twitter">Twitter</string>
+    <string name="instagram">Instagram</string>
+    <string name="add_ad">Add ad</string>
 </resources>

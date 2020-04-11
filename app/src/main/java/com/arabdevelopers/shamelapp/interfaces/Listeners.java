@@ -24,8 +24,6 @@ public interface Listeners {
     interface SettingActions
     {
         void openWhatsApp();
-        void changeLanguage();
-        void contactUs();
         void addAds();
         void terms();
         void privacyPolicy();
@@ -43,6 +41,21 @@ public interface Listeners {
         void checkDataValid();
         void checkReadPermission();
         void checkCameraPermission();
+    }
+
+
+    interface AdDetailsActions
+    {
+        void like_dislike();
+        void info();
+        void map();
+        void call();
+        void call2();
+        void whatApp();
+        void facebook();
+        void twitter();
+        void instagram();
+
     }
 
 
