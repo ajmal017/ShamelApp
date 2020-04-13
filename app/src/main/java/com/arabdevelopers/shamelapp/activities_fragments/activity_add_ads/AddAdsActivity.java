@@ -3,6 +3,7 @@ package com.arabdevelopers.shamelapp.activities_fragments.activity_add_ads;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -19,6 +20,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,13 +32,21 @@ import androidx.databinding.DataBindingUtil;
 
 import com.arabdevelopers.shamelapp.R;
 import com.arabdevelopers.shamelapp.activities_fragments.FragmentMapTouchListener;
+import com.arabdevelopers.shamelapp.adapters.SpinnerDepartmentAdapter;
+import com.arabdevelopers.shamelapp.adapters.SpinnerSubDepartmentAdapter;
 import com.arabdevelopers.shamelapp.databinding.ActivityAddAdsBinding;
 import com.arabdevelopers.shamelapp.interfaces.Listeners;
 import com.arabdevelopers.shamelapp.language.Language;
+import com.arabdevelopers.shamelapp.models.AddAdsModel;
+import com.arabdevelopers.shamelapp.models.DepartmentModel;
+import com.arabdevelopers.shamelapp.models.MainDeptSubDeptDataModel;
 import com.arabdevelopers.shamelapp.models.PlaceGeocodeData;
 import com.arabdevelopers.shamelapp.models.PlaceMapDetailsData;
+import com.arabdevelopers.shamelapp.models.UserModel;
+import com.arabdevelopers.shamelapp.preferences.Preferences;
 import com.arabdevelopers.shamelapp.remote.Api;
 import com.arabdevelopers.shamelapp.share.Common;
+import com.arabdevelopers.shamelapp.tags.Tags;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -62,9 +72,14 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import io.paperdb.Paper;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -88,27 +103,45 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
     private final int READ_REQ = 1, CAMERA_REQ = 2;
     private Uri uri = null;
     private final int loc_req = 1225;
+    private SpinnerDepartmentAdapter mainAdapter;
+    private SpinnerSubDepartmentAdapter subAdapter;
+    private List<MainDeptSubDeptDataModel.Data> mainList;
+    private List<DepartmentModel> subList;
+    private AddAdsModel addAdsModel;
+    private UserModel.User userModel;
+    private Preferences preferences;
 
     @Override
-    protected void attachBaseContext(Context newBase) {
+    protected void attachBaseContext(Context newBase)
+    {
         Paper.init(newBase);
         super.attachBaseContext(Language.updateResources(newBase, Paper.book().read("lang", Locale.getDefault().getLanguage())));
 
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_ads);
         initView();
     }
 
-    private void initView() {
+    private void initView()
+    {
+        preferences = Preferences.getInstance();
+        userModel = preferences.getUserData(this);
+        mainList = new ArrayList<>();
+        subList = new ArrayList<>();
+        mainList.add(new MainDeptSubDeptDataModel.Data(0,getString(R.string.choose)));
+        subList.add(new DepartmentModel(0,getString(R.string.choose)));
         Paper.init(this);
         lang = Paper.book().read("lang", Locale.getDefault().getLanguage());
+        addAdsModel  = new AddAdsModel();
         binding.setLang(lang);
         binding.setBackListener(this);
         binding.setListener(this);
+        binding.setModel(addAdsModel);
         binding.progBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         binding.edtSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -121,8 +154,126 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
             }
             return false;
         });
+
+        ////////////////////////////////////////////////
+
+        mainAdapter = new SpinnerDepartmentAdapter(mainList,this);
+        binding.mainSpinner.setAdapter(mainAdapter);
+
+        subAdapter = new SpinnerSubDepartmentAdapter(subList,this);
+        binding.subSpinner.setAdapter(subAdapter);
+
+
+        binding.mainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i==0)
+                {
+                    subList.clear();
+                    subList.add(new DepartmentModel(0,getString(R.string.choose)));
+                    subAdapter.notifyDataSetChanged();
+                    addAdsModel.setMain_dept_id(0);
+                }else
+                    {
+                        addAdsModel.setMain_dept_id(mainList.get(i).getId());
+
+                        subList.addAll(mainList.get(i).getSub_departments());
+                       subAdapter.notifyDataSetChanged();
+                    }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        binding.subSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i==0)
+                {
+                    addAdsModel.setSub_dept_id(0);
+                }else
+                {
+                    addAdsModel.setSub_dept_id(subList.get(i).getId());
+
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        ////////////////////////////////////////////////
+
+
         updateUI();
         CheckPermission();
+        getData();
+    }
+
+    private void getData()
+    {
+        ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
+        dialog.show();
+        Api.getService(Tags.base_url)
+                .getMainSubDepartment()
+                .enqueue(new Callback<MainDeptSubDeptDataModel>() {
+                    @Override
+                    public void onResponse(Call<MainDeptSubDeptDataModel> call, Response<MainDeptSubDeptDataModel> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful())
+                        {
+                            if (response.body()!=null&&response.body().getData()!=null)
+                            {
+                                updateSpinnerData(response.body().getData());
+                            }
+                        }else
+                            {
+                                if (response.code()==500)
+                                {
+                                    Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MainDeptSubDeptDataModel> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });
+
+    }
+
+    private void updateSpinnerData(List<MainDeptSubDeptDataModel.Data> data)
+    {
+        mainList.clear();
+        mainList.add(new MainDeptSubDeptDataModel.Data(0,getString(R.string.choose)));
+        mainList.addAll(data);
+        mainAdapter.notifyDataSetChanged();
+
     }
 
     private void CheckPermission()
@@ -134,7 +285,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
             initGoogleApi();
         }
     }
-    private void initGoogleApi() {
+    private void initGoogleApi()
+    {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -143,7 +295,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
         googleApiClient.connect();
     }
 
-    private void updateUI() {
+    private void updateUI()
+    {
 
         fragmentMapTouchListener = (FragmentMapTouchListener) getSupportFragmentManager().findFragmentById(R.id.map);
         fragmentMapTouchListener.getMapAsync(this);
@@ -152,7 +305,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap)
+    {
 
         if (googleMap != null) {
             mMap = googleMap;
@@ -174,7 +328,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
         }
     }
 
-    private void Search(String query) {
+    private void Search(String query)
+    {
 
         binding.progBar.setVisibility(View.VISIBLE);
 
@@ -222,7 +377,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
                 });
     }
 
-    private void getGeoData(final double lat, double lng) {
+    private void getGeoData(final double lat, double lng)
+    {
         binding.progBar.setVisibility(View.VISIBLE);
         String location = lat + "," + lng;
         Api.getService("https://maps.googleapis.com/maps/api/")
@@ -237,6 +393,9 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
                             if (response.body().getResults().size() > 0) {
                                 address = response.body().getResults().get(0).getFormatted_address().replace("Unnamed Road,", "");
                                 binding.edtSearch.setText(address + "");
+                                addAdsModel.setAddress(address);
+                                addAdsModel.setLat(lat);
+                                addAdsModel.setLng(lng);
                             }
                         } else {
 
@@ -263,7 +422,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
                 });
     }
 
-    private void AddMarker(double lat, double lng) {
+    private void AddMarker(double lat, double lng)
+    {
 
         this.lat = lat;
         this.lng = lng;
@@ -416,8 +576,9 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
         }else  if (requestCode == READ_REQ && resultCode == Activity.RESULT_OK && data != null) {
 
             uri = data.getData();
+            addAdsModel.setImage(uri);
             File file = new File(Common.getImagePath(this, uri));
-            Picasso.get().load(file).fit().into(binding.image);
+            Picasso.with(this).load(file).fit().into(binding.image);
             binding.icon.setVisibility(View.GONE);
 
 
@@ -433,10 +594,10 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
                 String path = Common.getImagePath(this, uri);
 
                 if (path != null) {
-                    Picasso.get().load(new File(path)).fit().into(binding.image);
+                    Picasso.with(this).load(new File(path)).fit().into(binding.image);
 
                 } else {
-                    Picasso.get().load(uri).fit().into(binding.image);
+                    Picasso.with(this).load(uri).fit().into(binding.image);
 
                 }
             }
@@ -479,9 +640,6 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
         }
     }
 
-
-
-
     private Uri getUriFromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -502,12 +660,86 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     @Override
-    public void checkDataValid() {
+    public void checkDataValid()
+    {
+        if (addAdsModel.isDataValid(this))
+        {
+            Common.CloseKeyBoard(this,binding.edtSearch);
+            addAds();
+        }
+    }
 
+    private void addAds()
+    {
+
+        Log.e("user",userModel.getToken());
+        ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
+        dialog.setCancelable(false);
+        dialog.show();
+
+        RequestBody name_part = Common.getRequestBodyText(addAdsModel.getName());
+        RequestBody dept_id_part = Common.getRequestBodyText(String.valueOf(addAdsModel.getMain_dept_id()));
+        RequestBody sub_dept_id_part = Common.getRequestBodyText(String.valueOf(addAdsModel.getSub_dept_id()));
+        RequestBody user_id_part = Common.getRequestBodyText(String.valueOf(userModel.getId()));
+        RequestBody details_part = Common.getRequestBodyText(addAdsModel.getDetails());
+        RequestBody address_part = Common.getRequestBodyText(addAdsModel.getAddress());
+        RequestBody lat_part = Common.getRequestBodyText(String.valueOf(addAdsModel.getLat()));
+        RequestBody lng_part = Common.getRequestBodyText(String.valueOf(addAdsModel.getLng()));
+
+        MultipartBody.Part image = Common.getMultiPart(this,addAdsModel.getImage(),"image");
+
+
+        Api.getService(Tags.base_url)
+                .addAds("Bearer"+userModel.getToken(),name_part,dept_id_part,sub_dept_id_part,user_id_part,details_part,lat_part,lng_part,address_part,image)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful()&&response.body()!=null)
+                        {
+                            finish();
+                            Toast.makeText(AddAdsActivity.this, getString(R.string.suc), Toast.LENGTH_SHORT).show();
+                        }else
+                        {
+                            try {
+                                Log.e("error",response.code()+"__"+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (response.code()==500)
+                            {
+                                Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }else
+                            {
+                                Toast.makeText(AddAdsActivity.this,getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+                            if (t.getMessage() != null) {
+                                Log.e("msg_category_error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });
     }
 
     @Override
-    public void checkReadPermission() {
+    public void checkReadPermission()
+    {
         closeSheet();
         if (ActivityCompat.checkSelfPermission(this, READ_PERM) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{READ_PERM}, READ_REQ);
@@ -517,7 +749,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     @Override
-    public void checkCameraPermission() {
+    public void checkCameraPermission()
+    {
 
         closeSheet();
 

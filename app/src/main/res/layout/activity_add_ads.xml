@@ -13,6 +13,9 @@
         <variable
             name="lang"
             type="String" />
+        <variable
+            name="model"
+            type="com.arabdevelopers.shamelapp.models.AddAdsModel" />
 
     </data>
     <LinearLayout
@@ -138,7 +141,7 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginEnd="10dp"
                             android:textColor="@color/gray4"
-                            android:textSize="18sp"
+                            android:textSize="15sp"
                             android:text="@string/upload_image"
                             />
                     </LinearLayout>
@@ -148,7 +151,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/ad_title"
                         android:layout_marginTop="20dp"
-                        android:textSize="18sp"
+                        android:textSize="15sp"
                         android:textColor="@color/gray6"
                         />
 
@@ -163,6 +166,8 @@
                         android:paddingEnd="10dp"
                         android:textColor="@color/black"
                         android:textSize="14sp"
+                        android:text="@={model.name}"
+                        error="@{model.error_name}"
                         />
 
                     <TextView
@@ -170,7 +175,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/main_department"
                         android:layout_marginTop="8dp"
-                        android:textSize="18sp"
+                        android:textSize="15sp"
                         android:textColor="@color/gray6"
                         />
                     <FrameLayout
@@ -179,6 +184,7 @@
                         android:background="@drawable/small_gray_rounded"
                         android:layout_marginTop="5dp">
                         <Spinner
+                            android:id="@+id/mainSpinner"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="5dp"
@@ -190,7 +196,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/sub_department"
                         android:layout_marginTop="8dp"
-                        android:textSize="18sp"
+                        android:textSize="15sp"
                         android:textColor="@color/gray6"
                         />
                     <FrameLayout
@@ -199,6 +205,7 @@
                         android:background="@drawable/small_gray_rounded"
                         android:layout_marginTop="5dp">
                         <Spinner
+                            android:id="@+id/subSpinner"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="5dp"
@@ -211,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/ads_details"
                         android:layout_marginTop="10dp"
-                        android:textSize="18sp"
+                        android:textSize="15sp"
                         android:textColor="@color/gray6"
                         />
 
@@ -227,6 +234,8 @@
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         android:gravity="start|top"
+                        android:text="@={model.details}"
+                        error="@{model.error_details}"
                         />
 
                     <TextView
@@ -234,7 +243,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/location_on_map"
                         android:layout_marginTop="10dp"
-                        android:textSize="18sp"
+                        android:textSize="15sp"
                         android:textColor="@color/gray6"
                         />
 
@@ -293,6 +302,8 @@
                                 tools:ignore="RtlCompat"
                                 android:clickable="true"
                                 android:focusable="true"
+                                android:text="@={model.address}"
+                                error="@{model.error_address}"
                                 />
 
                             <ProgressBar

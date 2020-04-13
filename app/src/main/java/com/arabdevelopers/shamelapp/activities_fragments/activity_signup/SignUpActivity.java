@@ -211,7 +211,7 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
 
             uri = data.getData();
             File file = new File(Common.getImagePath(this, uri));
-            Picasso.get().load(file).fit().into(binding.image);
+            Picasso.with(this).load(file).fit().into(binding.image);
             binding.icon.setVisibility(View.GONE);
 
 
@@ -227,10 +227,10 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
                 String path = Common.getImagePath(this, uri);
 
                 if (path != null) {
-                    Picasso.get().load(new File(path)).fit().into(binding.image);
+                    Picasso.with(this).load(new File(path)).fit().into(binding.image);
 
                 } else {
-                    Picasso.get().load(uri).fit().into(binding.image);
+                    Picasso.with(this).load(uri).fit().into(binding.image);
 
                 }
             }

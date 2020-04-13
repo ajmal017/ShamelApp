@@ -1,11 +1,15 @@
 package com.arabdevelopers.shamelapp.activities_fragments.activity_home;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -23,12 +27,20 @@ import com.arabdevelopers.shamelapp.databinding.DialogLanguageBinding;
 import com.arabdevelopers.shamelapp.language.Language;
 import com.arabdevelopers.shamelapp.models.UserModel;
 import com.arabdevelopers.shamelapp.preferences.Preferences;
+import com.arabdevelopers.shamelapp.remote.Api;
+import com.arabdevelopers.shamelapp.share.Common;
+import com.arabdevelopers.shamelapp.tags.Tags;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import io.paperdb.Paper;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity {
     private ActivityHomeBinding binding;
@@ -98,11 +110,27 @@ public class HomeActivity extends AppCompatActivity {
                     displayFragmentMain();
                     break;
                 case 1:
-                    displayFragmentFavourite();
+
+                    if (userModel!=null)
+                    {
+                        displayFragmentFavourite();
+
+                    }else
+                    {
+                        Common.CreateDialogAlert(this,getString(R.string.please_sign_in_or_sign_up));
+                    }
+
 
                     break;
                 case 2:
-                    displayFragmentProfile();
+                    if (userModel!=null)
+                    {
+                        displayFragmentProfile();
+
+                    }else
+                        {
+                            Common.CreateDialogAlert(this,getString(R.string.please_sign_in_or_sign_up));
+                        }
 
 
                     break;
@@ -273,10 +301,68 @@ public class HomeActivity extends AppCompatActivity {
     {
         if (userModel!=null)
         {
-            preferences.clear(this);
-        }
+            ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
+            dialog.show();
+            Api.getService(Tags.base_url)
+                    .logout("Bearer"+userModel.getToken(),userModel.getId())
+                    .enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            dialog.dismiss();
+                            if (response.isSuccessful()&&response.body()!=null)
+                            {
+                                preferences.clear(HomeActivity.this);
+                                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                if (manager!=null)
+                                {
+                                    manager.cancel(Tags.not_tag,Tags.not_id);
+                                }
+                                navigateToSignInActivity();
 
-        navigateToSignInActivity();
+
+                            }else
+                            {
+                                dialog.dismiss();
+                                try {
+                                    Log.e("error",response.code()+"__"+response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                if (response.code() ==500)
+                                {
+                                    Toast.makeText(HomeActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                                }else
+                                    {
+                                        Toast.makeText(HomeActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                    }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            try {
+                               dialog.dismiss();
+                                if (t.getMessage() != null) {
+                                    Log.e("error", t.getMessage() + "__");
+
+                                    if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                        Toast.makeText(HomeActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(HomeActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }catch (Exception e)
+                            {
+                                Log.e("Error",e.getMessage()+"__");
+                            }
+                        }
+                    });
+        }else
+            {
+                navigateToSignInActivity();
+            }
+
 
     }
     private void navigateToSignInActivity() {

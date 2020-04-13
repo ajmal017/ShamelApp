@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import com.arabdevelopers.shamelapp.R;
+import com.arabdevelopers.shamelapp.activities_fragments.activity_home.HomeActivity;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_signup.SignUpActivity;
 import com.arabdevelopers.shamelapp.databinding.ActivityVerificationCodeBinding;
 import com.arabdevelopers.shamelapp.language.Language;
@@ -203,6 +204,7 @@ public class VerificationCodeActivity extends AppCompatActivity {
                         if (response.isSuccessful()&&response.body()!=null)
                         {
                             preferences.create_update_userdata(VerificationCodeActivity.this,response.body().getData());
+                            navigateToHomeActivity();
                         }else
                         {
                             if (response.code()==500)
@@ -238,6 +240,12 @@ public class VerificationCodeActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void navigateToHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void navigateToSignUpActivity() {

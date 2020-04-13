@@ -54,8 +54,13 @@ public class Fragment_More extends Fragment implements Listeners.SettingActions 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_more, container, false);
-        initView();
         return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView();
     }
 
     private void initView() {
@@ -150,8 +155,16 @@ public class Fragment_More extends Fragment implements Listeners.SettingActions 
 
     @Override
     public void addAds() {
-        Intent intent = new Intent(activity, AddAdsActivity.class);
-        startActivity(intent);
+
+        if (userModel!=null)
+        {
+            Intent intent = new Intent(activity, AddAdsActivity.class);
+            startActivity(intent);
+        }else
+            {
+                Common.CreateDialogAlert(activity,getString(R.string.please_sign_in_or_sign_up));
+            }
+
     }
 
     @Override

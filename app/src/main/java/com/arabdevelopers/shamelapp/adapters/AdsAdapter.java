@@ -67,6 +67,26 @@ public class AdsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             });
 
+            holder1.binding.checkbox.setOnClickListener(view -> {
+
+                AdsModel model2 = list.get(holder1.getAdapterPosition());
+
+                if (holder1.binding.checkbox.isChecked())
+                {
+                    model2.setUser_like(new AdsModel.User_Like());
+                    activity.likeDislike(model2,holder1.getAdapterPosition(),1);
+                    notifyItemChanged(holder1.getAdapterPosition());
+
+                }else
+                    {
+                        model2.setUser_like(null);
+                        activity.likeDislike(model2,holder1.getAdapterPosition(),0);
+                        notifyItemChanged(holder1.getAdapterPosition());
+
+                    }
+
+            });
+
 
 
         }else if (holder instanceof LoadHolder) {

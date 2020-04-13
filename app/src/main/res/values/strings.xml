@@ -90,4 +90,8 @@
     <string name="twitter">Twitter</string>
     <string name="instagram">Instagram</string>
     <string name="add_ad">Add ad</string>
+    <string name="choose">Choose</string>
+    <string name="ch_ad_img">Choose ad image</string>
+    <string name="ch_main_dept">Choose main department</string>
+    <string name="ch_sub_dpt">Choose sub department</string>
 </resources>

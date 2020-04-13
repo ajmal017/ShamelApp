@@ -19,7 +19,7 @@ public class MainDepartmentAdapter extends RecyclerView.Adapter<MainDepartmentAd
     private List<DepartmentModel> list;
     private Context context;
     private LayoutInflater inflater;
-    private int [] background = {R.drawable.icon1,R.drawable.icon2,R.drawable.icon3,R.drawable.icon4,R.drawable.icon5,R.drawable.icon6};
+    //private int [] background = {R.drawable.icon1,R.drawable.icon2,R.drawable.icon3,R.drawable.icon4,R.drawable.icon5,R.drawable.icon6};
     private Fragment_Main fragment_main;
     public MainDepartmentAdapter(List<DepartmentModel> list, Context context, Fragment_Main fragment_main) {
         this.list = list;
@@ -39,8 +39,8 @@ public class MainDepartmentAdapter extends RecyclerView.Adapter<MainDepartmentAd
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         DepartmentModel model = list.get(position);
         holder.binding.setModel(model);
-        int pos = position%background.length;
-        holder.binding.ll.setBackgroundResource(background[pos]);
+        //int pos = position%background.length;
+        //holder.binding.ll.setBackgroundResource(background[pos]);
         holder.itemView.setOnClickListener(view -> {
 
             DepartmentModel departmentModel = list.get(holder.getAdapterPosition());

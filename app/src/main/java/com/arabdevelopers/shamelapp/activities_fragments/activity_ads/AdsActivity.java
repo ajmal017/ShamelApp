@@ -25,6 +25,7 @@ import com.arabdevelopers.shamelapp.language.Language;
 import com.arabdevelopers.shamelapp.models.AdsDataModel;
 import com.arabdevelopers.shamelapp.models.AdsModel;
 import com.arabdevelopers.shamelapp.models.DepartmentModel;
+import com.arabdevelopers.shamelapp.models.LikeDislikeModel;
 import com.arabdevelopers.shamelapp.models.UserModel;
 import com.arabdevelopers.shamelapp.preferences.Preferences;
 import com.arabdevelopers.shamelapp.remote.Api;
@@ -229,7 +230,8 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
     }
 
 
-    public void setItemData(AdsModel model, int adapterPosition) {
+    public void setItemData(AdsModel model, int adapterPosition)
+    {
         this.selected_pos = adapterPosition;
         Intent intent = new Intent(this, AdsDetailsActivity.class);
         intent.putExtra("data",model);
@@ -238,22 +240,125 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
 
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==100&&resultCode==RESULT_OK)
+        if (requestCode==100&&resultCode==RESULT_OK&&data!=null)
         {
+            int action = data.getIntExtra("action",0);
             if (selected_pos!=-1)
             {
-                AdsModel adsModel = adsModelList.get(selected_pos);
-                AdsModel.User_Like user_like = new AdsModel.User_Like();
-                adsModel.setUser_like(user_like);
-                adsModelList.set(selected_pos,adsModel);
+
+                if (action==0)
+                {
+                    //dislike
+
+                    AdsModel adsModel = adsModelList.get(selected_pos);
+                    adsModel.setUser_like(null);
+                    adsModelList.set(selected_pos,adsModel);
+
+                }else
+                    {
+                        //like
+
+                        AdsModel adsModel = adsModelList.get(selected_pos);
+                        AdsModel.User_Like user_like = new AdsModel.User_Like();
+                        adsModel.setUser_like(user_like);
+                        adsModelList.set(selected_pos,adsModel);
+
+                    }
+
+
                 adapter.notifyItemChanged(selected_pos);
                 selected_pos = -1;
             }
         }
+    }
+
+
+    public void likeDislike(AdsModel model, int adapterPosition, int action)
+    {
+        if (userModel!=null)
+        {
+            Api.getService(Tags.base_url)
+                    .likeDislike("Bearer"+userModel.getToken(),userModel.getId(),model.getId())
+                    .enqueue(new Callback<LikeDislikeModel>() {
+                        @Override
+                        public void onResponse(Call<LikeDislikeModel> call, Response<LikeDislikeModel> response) {
+                            if (response.isSuccessful()&&response.body()!=null)
+                            {
+                                if (response.body().getStatus()==0)
+                                {
+                                    model.setUser_like(null);
+
+                                }else
+                                    {
+                                        model.setUser_like(new AdsModel.User_Like());
+
+                                    }
+
+                                adsModelList.set(adapterPosition,model);
+                                adapter.notifyItemChanged(adapterPosition);
+
+                            }else
+                                {
+                                    if (action==0)
+                                    {
+                                        model.setUser_like(new AdsModel.User_Like());
+                                        adapter.notifyItemChanged(adapterPosition);
+
+                                    }else
+                                        {
+                                            model.setUser_like(null);
+                                            adapter.notifyItemChanged(adapterPosition);
+                                        }
+
+                                }
+                        }
+
+                        @Override
+                        public void onFailure(Call<LikeDislikeModel> call, Throwable t) {
+                            try {
+                                if (action==0)
+                                {
+                                    model.setUser_like(new AdsModel.User_Like());
+                                    adapter.notifyItemChanged(adapterPosition);
+
+                                }else
+                                {
+                                    model.setUser_like(null);
+                                    adapter.notifyItemChanged(adapterPosition);
+                                }
+                                if (t.getMessage() != null) {
+                                    Log.e("error", t.getMessage() + "__");
+
+                                    if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                        Toast.makeText(AdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(AdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }catch (Exception e)
+                            {
+                                Log.e("Error",e.getMessage()+"__");
+                            }
+                        }
+                    });
+        }else
+            {
+                if (action==0)
+                {
+                    model.setUser_like(new AdsModel.User_Like());
+                    adapter.notifyItemChanged(adapterPosition);
+
+                }else
+                {
+                    model.setUser_like(null);
+                    adapter.notifyItemChanged(adapterPosition);
+                }
+            }
+
+
     }
 
     @Override

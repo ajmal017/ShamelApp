@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -16,6 +17,11 @@ import com.arabdevelopers.shamelapp.databinding.ActivityAdsDetailsBinding;
 import com.arabdevelopers.shamelapp.interfaces.Listeners;
 import com.arabdevelopers.shamelapp.language.Language;
 import com.arabdevelopers.shamelapp.models.AdsModel;
+import com.arabdevelopers.shamelapp.models.LikeDislikeModel;
+import com.arabdevelopers.shamelapp.models.UserModel;
+import com.arabdevelopers.shamelapp.preferences.Preferences;
+import com.arabdevelopers.shamelapp.remote.Api;
+import com.arabdevelopers.shamelapp.tags.Tags;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,16 +34,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.Locale;
 
 import io.paperdb.Paper;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdsDetailsActivity extends AppCompatActivity implements Listeners.BackListener, Listeners.AdDetailsActions , OnMapReadyCallback {
     private ActivityAdsDetailsBinding binding;
     private String lang;
     private AdsModel adsModel;
+    private Preferences preferences;
+    private UserModel.User userModel;
     private String title;
     private FragmentMapTouchListener fragmentMapTouchListener;
     private Marker marker;
     private GoogleMap mMap;
     private float zoom = 15.6f;
+    private int action = -1;
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -63,6 +75,8 @@ public class AdsDetailsActivity extends AppCompatActivity implements Listeners.B
 
     private void initView()
     {
+        preferences = Preferences.getInstance();
+        userModel = preferences.getUserData(this);
         Paper.init(this);
         lang = Paper.book().read("lang", Locale.getDefault().getLanguage());
         binding.setBackListener(this);
@@ -120,7 +134,87 @@ public class AdsDetailsActivity extends AppCompatActivity implements Listeners.B
 
 
     @Override
-    public void like_dislike() {
+    public void like_dislike()
+    {
+
+        if (userModel!=null)
+        {
+            Api.getService(Tags.base_url)
+                    .likeDislike("Bearer"+userModel.getToken(),userModel.getId(),adsModel.getId())
+                    .enqueue(new Callback<LikeDislikeModel>() {
+                        @Override
+                        public void onResponse(Call<LikeDislikeModel> call, Response<LikeDislikeModel> response) {
+                            if (response.isSuccessful()&&response.body()!=null)
+                            {
+                                if (response.body().getStatus()==0)
+                                {
+                                    adsModel.setUser_like(null);
+                                    action = 0;
+                                }else
+                                {
+                                    adsModel.setUser_like(new AdsModel.User_Like());
+                                    action = 1;
+
+                                }
+
+                                binding.setModel(adsModel);
+
+
+                            }else
+                            {
+                                if (action==0)
+                                {
+                                    adsModel.setUser_like(new AdsModel.User_Like());
+
+                                }else
+                                {
+                                    adsModel.setUser_like(null);
+                                }
+
+                                binding.setModel(adsModel);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<LikeDislikeModel> call, Throwable t) {
+                            try {
+                                if (action==0)
+                                {
+                                    adsModel.setUser_like(new AdsModel.User_Like());
+
+                                }else
+                                {
+                                    adsModel.setUser_like(null);
+                                }
+                                binding.setModel(adsModel);
+                                if (t.getMessage() != null) {
+                                    Log.e("error", t.getMessage() + "__");
+
+                                    if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                        Toast.makeText(AdsDetailsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(AdsDetailsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }catch (Exception e)
+                            {
+                                Log.e("Error",e.getMessage()+"__");
+                            }
+                        }
+                    });
+        }else
+        {
+            if (binding.checkbox.isChecked())
+            {
+                adsModel.setUser_like(null);
+                binding.setModel(adsModel);
+            }else
+            {
+                adsModel.setUser_like(new AdsModel.User_Like());
+                binding.setModel(adsModel);
+            }
+        }
+
 
     }
 
@@ -214,6 +308,13 @@ public class AdsDetailsActivity extends AppCompatActivity implements Listeners.B
 
     @Override
     public void back() {
+
+        if (action!=-1)
+        {
+            Intent intent = getIntent();
+            intent.putExtra("action",action);
+            setResult(RESULT_OK,intent);
+        }
         finish();
     }
 }

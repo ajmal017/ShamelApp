@@ -6,10 +6,20 @@ public class DepartmentModel implements Serializable {
 
     private int id;
     private String name;
+    private String icon;
     private String background;
     private String image;
     private String type_department;
     private String type;
+
+
+    public DepartmentModel() {
+    }
+
+    public DepartmentModel(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public int getId() {
         return id;
@@ -33,5 +43,9 @@ public class DepartmentModel implements Serializable {
 
     public String getType() {
         return type;
+    }
+
+    public String getIcon() {
+        return icon;
     }
 }

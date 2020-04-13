@@ -49,18 +49,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="top|center_horizontal"
-                            android:layout_marginTop="40dp"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:maxLines="2"
-                            android:ellipsize="end"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginEnd="20dp"
-                            />
+
                     </FrameLayout>
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -75,6 +64,7 @@
                         app:layout_constraintBottom_toBottomOf="@id/fl"
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="20dp"
+                        imageProfile="@{userModel.image}"
 
                         />
 

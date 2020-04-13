@@ -127,7 +127,7 @@
                                 app:civ_border_width="1dp"
                                 app:civ_border_color="@color/colorPrimary"
                                 android:src="@drawable/user_avatar"
-                                imageEndPoint="@{model.user.image}"
+                                imageProfile="@{model.user.image}"
                                 />
                                 <TextView
                                     android:layout_width="0dp"

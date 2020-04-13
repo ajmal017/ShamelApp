@@ -3,7 +3,9 @@ package com.arabdevelopers.shamelapp.services;
 
 import com.arabdevelopers.shamelapp.models.AdsDataModel;
 import com.arabdevelopers.shamelapp.models.AppDataModel;
+import com.arabdevelopers.shamelapp.models.LikeDislikeModel;
 import com.arabdevelopers.shamelapp.models.MainDeptSliderData;
+import com.arabdevelopers.shamelapp.models.MainDeptSubDeptDataModel;
 import com.arabdevelopers.shamelapp.models.PlaceGeocodeData;
 import com.arabdevelopers.shamelapp.models.PlaceMapDetailsData;
 import com.arabdevelopers.shamelapp.models.SubDeptSliderData;
@@ -11,6 +13,7 @@ import com.arabdevelopers.shamelapp.models.UserModel;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -76,5 +79,38 @@ public interface Service {
                               @Query("sub_department_id") int sub_department_id,
                               @Query("user_id") String user_id
     );
+
+
+    @FormUrlEncoded
+    @POST("api/like-dislike-action")
+    Call<LikeDislikeModel> likeDislike(@Header("Authorization") String token,
+                                       @Field("user_id") int user_id,
+                                       @Field("advertisement_id") int advertisement_id);
+
+
+    @GET("api/departments-with-sub-departments")
+    Call<MainDeptSubDeptDataModel> getMainSubDepartment();
+
+
+    @Multipart
+    @POST("api/add-advertisement")
+    Call<ResponseBody> addAds(@Header("Authorization") String token,
+                              @Part("name") RequestBody name,
+                              @Part("department_id") RequestBody department_id,
+                              @Part("sub_department_id") RequestBody sub_department_id,
+                              @Part("user_id") RequestBody user_id,
+                              @Part("content") RequestBody content,
+                              @Part("latitude") RequestBody latitude,
+                              @Part("longitude") RequestBody longitude,
+                              @Part("address") RequestBody address,
+                              @Part MultipartBody.Part image
+    );
+
+
+    @FormUrlEncoded
+    @POST("api/logout")
+    Call<ResponseBody> logout(@Header("Authorization") String token,
+                              @Field("user_id") int user_id
+                              );
 
 }
