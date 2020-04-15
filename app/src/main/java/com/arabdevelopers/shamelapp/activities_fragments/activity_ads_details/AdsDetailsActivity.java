@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import io.paperdb.Paper;
@@ -140,7 +141,7 @@ public class AdsDetailsActivity extends AppCompatActivity implements Listeners.B
         if (userModel!=null)
         {
             Api.getService(Tags.base_url)
-                    .likeDislike("Bearer"+userModel.getToken(),userModel.getId(),adsModel.getId())
+                    .likeDislike("Bearer "+userModel.getToken(),userModel.getId(),adsModel.getId())
                     .enqueue(new Callback<LikeDislikeModel>() {
                         @Override
                         public void onResponse(Call<LikeDislikeModel> call, Response<LikeDislikeModel> response) {
@@ -172,6 +173,22 @@ public class AdsDetailsActivity extends AppCompatActivity implements Listeners.B
                                 }
 
                                 binding.setModel(adsModel);
+
+
+                                try {
+                                    Log.e("error",response.code()+"_"+response.errorBody().string());
+
+                                    if (response.code()==500)
+                                    {
+                                        Toast.makeText(AdsDetailsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                                    }else
+                                    {
+                                        Toast.makeText(AdsDetailsActivity.this,getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
 

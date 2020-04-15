@@ -13,6 +13,10 @@ import com.arabdevelopers.shamelapp.tags.Tags;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -69,6 +73,14 @@ public class GeneralMethod {
             ImageView imageView = (ImageView) view;
             Picasso.with(view.getContext()).load(Uri.parse(path)).placeholder(R.drawable.user_avatar).into(imageView);
         }
+    }
+
+    @BindingAdapter("date")
+    public static void displayDate(TextView textView ,long date)
+    {
+        SimpleDateFormat  simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm aa", Locale.ENGLISH);
+        String d = simpleDateFormat.format(new Date(date*1000));
+        textView.setText(d);
     }
 
 

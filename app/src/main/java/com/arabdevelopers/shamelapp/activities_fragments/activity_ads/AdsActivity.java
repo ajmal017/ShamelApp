@@ -31,6 +31,7 @@ import com.arabdevelopers.shamelapp.preferences.Preferences;
 import com.arabdevelopers.shamelapp.remote.Api;
 import com.arabdevelopers.shamelapp.tags.Tags;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -312,6 +313,25 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
                                             model.setUser_like(null);
                                             adapter.notifyItemChanged(adapterPosition);
                                         }
+
+
+                                    try {
+                                        Log.e("error",response.code()+"_"+response.errorBody().string());
+
+                                        if (response.code()==500)
+                                        {
+                                            Toast.makeText(AdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                                        }else
+                                        {
+                                            Toast.makeText(AdsActivity.this,getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+
+
 
                                 }
                         }

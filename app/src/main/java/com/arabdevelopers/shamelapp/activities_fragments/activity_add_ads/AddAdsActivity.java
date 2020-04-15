@@ -690,7 +690,7 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
 
 
         Api.getService(Tags.base_url)
-                .addAds("Bearer"+userModel.getToken(),name_part,dept_id_part,sub_dept_id_part,user_id_part,details_part,lat_part,lng_part,address_part,image)
+                .addAds("Bearer "+userModel.getToken(),name_part,dept_id_part,sub_dept_id_part,user_id_part,details_part,lat_part,lng_part,address_part,image)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

@@ -24,13 +24,14 @@
                 android:layout_gravity="center"
                 />
             <TextView
-                android:id="@+id/tvNoOrder"
+                android:id="@+id/tvNoData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textSize="17sp"
                 android:textColor="@color/black"
                 android:visibility="gone"
+                android:text="@string/no_data_to_show"
                 />
         </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

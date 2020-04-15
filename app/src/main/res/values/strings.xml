@@ -94,4 +94,5 @@
     <string name="ch_ad_img">Choose ad image</string>
     <string name="ch_main_dept">Choose main department</string>
     <string name="ch_sub_dpt">Choose sub department</string>
+    <string name="show">Show</string>
 </resources>

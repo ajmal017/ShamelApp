@@ -4,7 +4,7 @@
     <string name="map_key">AIzaSyArjmbYWTWZhDFFtPOLRLKYwjtBDkOEGrY</string>
     <string name="map_key2">AIzaSyDz07XWgRsDTQtmA4IOvx-fSIc1d_Wrk9c</string>
     <string name="home">الرئيسية</string>
-    <string name="notifications">إشعار</string>
+    <string name="notifications">إشعارات</string>
     <string name="more">المزيد</string>
     <string name="terms_and_conditions">الشروط والاحكام</string>
     <string name="about_app">عن التطبيق</string>
@@ -100,4 +100,5 @@
     <string name="ch_ad_img">إختر صورة الإعلان</string>
     <string name="ch_main_dept">إختر القسم الرئيسي</string>
     <string name="ch_sub_dpt">إختر القسم الفرعي</string>
+    <string name="show">عرض</string>
 </resources>

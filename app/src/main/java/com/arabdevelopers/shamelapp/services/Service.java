@@ -6,6 +6,8 @@ import com.arabdevelopers.shamelapp.models.AppDataModel;
 import com.arabdevelopers.shamelapp.models.LikeDislikeModel;
 import com.arabdevelopers.shamelapp.models.MainDeptSliderData;
 import com.arabdevelopers.shamelapp.models.MainDeptSubDeptDataModel;
+import com.arabdevelopers.shamelapp.models.NotificationCountModel;
+import com.arabdevelopers.shamelapp.models.NotificationDataModel;
 import com.arabdevelopers.shamelapp.models.PlaceGeocodeData;
 import com.arabdevelopers.shamelapp.models.PlaceMapDetailsData;
 import com.arabdevelopers.shamelapp.models.SubDeptSliderData;
@@ -111,6 +113,42 @@ public interface Service {
     @POST("api/logout")
     Call<ResponseBody> logout(@Header("Authorization") String token,
                               @Field("user_id") int user_id
-                              );
+    );
+
+    @GET("api/favourite")
+    Call<AdsDataModel> getFavourite(@Query("pagination_status") String pagination_status,
+                                    @Query("per_link_") int per_link,
+                                    @Query("page") int page,
+                                    @Query("user_id") int user_id
+    );
+
+    @FormUrlEncoded
+    @POST("api/notification-count")
+    Call<NotificationCountModel> getNotificationCount(@Header("Authorization") String token,
+                                                      @Field("user_id") int user_id
+    );
+
+    @FormUrlEncoded
+    @POST("api/notification-is-read")
+    Call<ResponseBody> readNotification(@Header("Authorization") String token,
+                                        @Field("user_id") int user_id
+    );
+
+
+    @GET("api/notifications")
+    Call<NotificationDataModel> getNotification(@Header("Authorization") String token,
+                                                @Query("pagination_status") String pagination_status,
+                                                @Query("per_link_") int per_link,
+                                                @Query("page") int page,
+                                                @Query("user_id") int user_id
+    );
+
+
+    @FormUrlEncoded
+    @POST("api/delete_notifications")
+    Call<ResponseBody> deleteNotification(@Header("Authorization") String token,
+                                          @Field("id") int id,
+                                          @Field("user_id") int user_id
+    );
 
 }

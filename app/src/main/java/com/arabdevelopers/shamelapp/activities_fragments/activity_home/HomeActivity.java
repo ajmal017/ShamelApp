@@ -22,9 +22,11 @@ import com.arabdevelopers.shamelapp.activities_fragments.activity_home.fragments
 import com.arabdevelopers.shamelapp.activities_fragments.activity_home.fragments.Fragment_More;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_home.fragments.Fragment_Profile;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_login.LoginActivity;
+import com.arabdevelopers.shamelapp.activities_fragments.activity_notification.NotificationActivity;
 import com.arabdevelopers.shamelapp.databinding.ActivityHomeBinding;
 import com.arabdevelopers.shamelapp.databinding.DialogLanguageBinding;
 import com.arabdevelopers.shamelapp.language.Language;
+import com.arabdevelopers.shamelapp.models.NotificationCountModel;
 import com.arabdevelopers.shamelapp.models.UserModel;
 import com.arabdevelopers.shamelapp.preferences.Preferences;
 import com.arabdevelopers.shamelapp.remote.Api;
@@ -80,6 +82,12 @@ public class HomeActivity extends AppCompatActivity {
         Paper.init(this);
         setUpBottomNavigation();
         binding.flLanguage.setOnClickListener(view -> createLangDialog());
+        binding.flNotification.setOnClickListener(view -> {
+            readNotificationCount();
+            Intent intent = new Intent(this, NotificationActivity.class);
+            startActivity(intent);
+        });
+        getNotificationCount();
 
     }
 
@@ -197,7 +205,7 @@ public class HomeActivity extends AppCompatActivity {
             }
             if (fragment_favourite.isAdded()) {
                 fragmentManager.beginTransaction().show(fragment_favourite).commit();
-
+                fragment_favourite.getData();
             } else {
                 fragmentManager.beginTransaction().add(R.id.fragment_app_container, fragment_favourite, "fragment_favourite").addToBackStack("fragment_favourite").commit();
 
@@ -267,7 +275,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-
     public void refreshActivity(String lang) {
         Paper.book().write("lang", lang);
         Language.setNewLocale(this, lang);
@@ -304,12 +311,12 @@ public class HomeActivity extends AppCompatActivity {
             ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
             dialog.show();
             Api.getService(Tags.base_url)
-                    .logout("Bearer"+userModel.getToken(),userModel.getId())
+                    .logout("Bearer "+userModel.getToken(),userModel.getId())
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             dialog.dismiss();
-                            if (response.isSuccessful()&&response.body()!=null)
+                            if (response.isSuccessful())
                             {
                                 preferences.clear(HomeActivity.this);
                                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -365,6 +372,104 @@ public class HomeActivity extends AppCompatActivity {
 
 
     }
+
+    private void getNotificationCount()
+    {
+        Api.getService(Tags.base_url)
+                .getNotificationCount("Bearer "+userModel.getToken(),userModel.getId())
+                .enqueue(new Callback<NotificationCountModel>() {
+                    @Override
+                    public void onResponse(Call<NotificationCountModel> call, Response<NotificationCountModel> response) {
+                        if (response.isSuccessful())
+                        {
+                            binding.setNotCount(response.body().getCount());
+                        }else
+                        {
+                            try {
+                                Log.e("errorNotCode",response.code()+"__"+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (response.code() ==500)
+                            {
+                                Toast.makeText(HomeActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }else
+                            {
+                                Toast.makeText(HomeActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<NotificationCountModel> call, Throwable t) {
+                        try {
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(HomeActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(HomeActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });
+    }
+
+    private void readNotificationCount()
+    {
+        Api.getService(Tags.base_url)
+                .readNotification("Bearer "+userModel.getToken(),userModel.getId())
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful())
+                        {
+                            binding.setNotCount(0);
+                        }else
+                        {
+                            try {
+                                Log.e("error",response.code()+"__"+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (response.code() ==500)
+                            {
+                                Toast.makeText(HomeActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }else
+                            {
+                                Toast.makeText(HomeActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        try {
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(HomeActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(HomeActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });
+    }
+
+
     private void navigateToSignInActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
