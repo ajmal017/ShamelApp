@@ -83,9 +83,16 @@ public class HomeActivity extends AppCompatActivity {
         setUpBottomNavigation();
         binding.flLanguage.setOnClickListener(view -> createLangDialog());
         binding.flNotification.setOnClickListener(view -> {
-            readNotificationCount();
-            Intent intent = new Intent(this, NotificationActivity.class);
-            startActivity(intent);
+            if (userModel!=null)
+            {
+                readNotificationCount();
+                Intent intent = new Intent(this, NotificationActivity.class);
+                startActivity(intent);
+            }else
+                {
+                    Common.CreateDialogAlert(this,getString(R.string.please_sign_in_or_sign_up));
+                }
+
         });
         getNotificationCount();
 

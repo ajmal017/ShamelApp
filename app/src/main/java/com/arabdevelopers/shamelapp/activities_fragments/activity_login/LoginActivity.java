@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements Listeners.LoginL
     private void navigateToVerificationCodeActivity() {
 
         Intent intent = new Intent(this, VerificationCodeActivity.class);
-        intent.putExtra("phone_code","+20");
+        intent.putExtra("phone_code","+965");
         intent.putExtra("phone",loginModel.getPhone());
         startActivity(intent);
         finish();

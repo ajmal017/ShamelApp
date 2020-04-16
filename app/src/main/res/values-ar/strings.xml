@@ -10,7 +10,7 @@
     <string name="about_app">عن التطبيق</string>
     <string name="contact_us">اتصل بنا</string>
     <string name="back">رجوع</string>
-    <string name="failed">فشل حاول مرة اخرى لاحقا</string>
+    <string name="failed">يوجد مشكله وجار العمل عليها</string>
     <string name="something">تحقق من الاتصال بالانترنت</string>
 
     <string name="language_settings">إعدادات اللغة</string>
