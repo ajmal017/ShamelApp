@@ -91,6 +91,7 @@ public class AboutAppActivity extends AppCompatActivity implements Listeners.Bac
 
                             if (type==1)
                             {
+
                                 binding.setContent(response.body().getSettings().getTermis_condition());
                             }else
                             {

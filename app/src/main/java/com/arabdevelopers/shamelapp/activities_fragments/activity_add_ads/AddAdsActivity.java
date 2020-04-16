@@ -576,10 +576,25 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
         }else  if (requestCode == READ_REQ && resultCode == Activity.RESULT_OK && data != null) {
 
             uri = data.getData();
-            addAdsModel.setImage(uri);
-            File file = new File(Common.getImagePath(this, uri));
-            Picasso.with(this).load(file).fit().into(binding.image);
-            binding.icon.setVisibility(View.GONE);
+            if (uri!=null)
+            {
+                Log.e("uri",uri+"_");
+                addAdsModel.setImage(uri);
+                String path = Common.getImagePath(this, uri);
+                if (path!=null)
+                {
+                    Log.e("path",path+"__");
+
+                    Picasso.with(this).load(new File(path)).fit().into(binding.image);
+
+                }else
+                    {
+                        Picasso.with(this).load(uri).fit().into(binding.image);
+
+                    }
+                binding.icon.setVisibility(View.GONE);
+            }
+
 
 
 

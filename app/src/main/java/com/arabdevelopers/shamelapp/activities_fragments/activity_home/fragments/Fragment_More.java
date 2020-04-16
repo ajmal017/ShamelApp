@@ -132,18 +132,27 @@ public class Fragment_More extends Fragment implements Listeners.SettingActions 
     public void openWhatsApp() {
         if (appDataModel!=null)
         {
-            String patterns = "(\\+|00)\\d{5,}";
 
-            if (appDataModel.getSettings().getWhatsapp().matches(patterns))
+            if (appDataModel.getSettings().getWhatsapp()!=null)
             {
-                String url = "https://api.whatsapp.com/send?phone="+appDataModel.getSettings().getWhatsapp();
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                startActivity(i);
-            }else
+                String patterns = "(\\+|00)\\d{5,}";
+
+                if (appDataModel.getSettings().getWhatsapp().matches(patterns))
+                {
+                    String url = "https://api.whatsapp.com/send?phone="+appDataModel.getSettings().getWhatsapp();
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    startActivity(i);
+                }else
                 {
                     Toast.makeText(activity, R.string.inv_whatsapp, Toast.LENGTH_SHORT).show();
                 }
+            }else
+                {
+                    Common.CreateDialogAlert(activity,getString(R.string.whats_not_av));
+
+                }
+
 
         }else
             {
@@ -191,18 +200,25 @@ public class Fragment_More extends Fragment implements Listeners.SettingActions 
     public void openTwitter() {
         if (appDataModel!=null)
         {
-            String pattern = "https?://.+\\..{2,}";
-            if (appDataModel.getSettings().getTwitter().matches(pattern))
+            if (appDataModel.getSettings().getTwitter()!=null)
             {
-                Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(appDataModel.getSettings().getTwitter()));
-                startActivity(intent);
-            }else
+                String pattern = "https?://.+\\..{2,}";
+                if (appDataModel.getSettings().getTwitter().matches(pattern))
+                {
+                    Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(appDataModel.getSettings().getTwitter()));
+                    startActivity(intent);
+                }else
                 {
                     Toast.makeText(activity, R.string.inv_url, Toast.LENGTH_SHORT).show();
                 }
+            }else {
+                Toast.makeText(activity, R.string.inv_url, Toast.LENGTH_SHORT).show();
+
+            }
+
 
         }else {
-            Common.CreateDialogAlert(activity,getString(R.string.whats_not_av));
+            Toast.makeText(activity, R.string.inv_url, Toast.LENGTH_SHORT).show();
 
         }
 
@@ -212,30 +228,46 @@ public class Fragment_More extends Fragment implements Listeners.SettingActions 
     public void openSnapChat() {
 
 
-        String pattern = "https?://.+\\..{2,}";
-        if (appDataModel.getSettings().getSnapchat().matches(pattern))
+        if (appDataModel.getSettings().getSnapchat()!=null)
         {
-            Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(appDataModel.getSettings().getSnapchat()));
-            startActivity(intent);
-        }else
-        {
+            String pattern = "https?://.+\\..{2,}";
+            if (appDataModel.getSettings().getSnapchat().matches(pattern))
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(appDataModel.getSettings().getSnapchat()));
+                startActivity(intent);
+            }else
+            {
+                Toast.makeText(activity, R.string.inv_url, Toast.LENGTH_SHORT).show();
+            }
+        }else {
             Toast.makeText(activity, R.string.inv_url, Toast.LENGTH_SHORT).show();
+
         }
+
 
 
     }
 
     @Override
     public void openInstagram() {
-        String pattern = "https?://.+\\..{2,}";
-        if (appDataModel.getSettings().getInstagram().matches(pattern))
+
+        if (appDataModel.getSettings().getInstagram()!=null)
         {
-            Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(appDataModel.getSettings().getInstagram()));
-            startActivity(intent);
-        }else
-        {
+            String pattern = "https?://.+\\..{2,}";
+            if (appDataModel.getSettings().getInstagram().matches(pattern))
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(appDataModel.getSettings().getInstagram()));
+                startActivity(intent);
+            }else
+            {
+                Toast.makeText(activity, R.string.inv_url, Toast.LENGTH_SHORT).show();
+            }
+        }else {
             Toast.makeText(activity, R.string.inv_url, Toast.LENGTH_SHORT).show();
+
         }
+
+
     }
 
 
