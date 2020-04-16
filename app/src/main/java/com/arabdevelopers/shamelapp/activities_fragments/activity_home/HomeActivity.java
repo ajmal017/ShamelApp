@@ -94,7 +94,12 @@ public class HomeActivity extends AppCompatActivity {
                 }
 
         });
-        getNotificationCount();
+
+        if (userModel!=null)
+        {
+            getNotificationCount();
+
+        }
 
     }
 
