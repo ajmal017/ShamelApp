@@ -135,18 +135,18 @@ public class Fragment_More extends Fragment implements Listeners.SettingActions 
 
             if (appDataModel.getSettings().getWhatsapp()!=null)
             {
-                String patterns = "(\\+|00)\\d{5,}";
+               // String patterns = "(\\+|00)\\d{5,}";
 
-                if (appDataModel.getSettings().getWhatsapp().matches(patterns))
-                {
+              /*  if (appDataModel.getSettings().getWhatsapp().matches(patterns))
+                {*/
                     String url = "https://api.whatsapp.com/send?phone="+appDataModel.getSettings().getWhatsapp();
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(url));
                     startActivity(i);
-                }else
+               /* }else
                 {
                     Toast.makeText(activity, R.string.inv_whatsapp, Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }else
                 {
                     Common.CreateDialogAlert(activity,getString(R.string.whats_not_av));

@@ -90,7 +90,7 @@ public interface Service {
                                        @Field("advertisement_id") int advertisement_id);
 
 
-    @GET("api/departments-with-sub-departments")
+    @GET("api/get-department-with-sub?type=client")
     Call<MainDeptSubDeptDataModel> getMainSubDepartment();
 
 

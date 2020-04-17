@@ -726,6 +726,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
                                 Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             }else
                             {
+                                Log.e("error",response.code()+"__"+response.errorBody()+"");
+
                                 Toast.makeText(AddAdsActivity.this,getString(R.string.failed), Toast.LENGTH_SHORT).show();
                             }
                         }
