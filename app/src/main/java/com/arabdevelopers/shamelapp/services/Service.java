@@ -151,4 +151,16 @@ public interface Service {
                                           @Field("user_id") int user_id
     );
 
+
+
+
+
+    @FormUrlEncoded
+    @POST("api/firebase-tokens")
+    Call<ResponseBody> updateToken(@Field("firebase_token") String token,
+                                   @Field("user_id") int user_id,
+                                   @Field("software_type") int soft_type
+
+    );
+
 }

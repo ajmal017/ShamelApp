@@ -26,6 +26,7 @@ import com.arabdevelopers.shamelapp.activities_fragments.activity_notification.N
 import com.arabdevelopers.shamelapp.databinding.ActivityHomeBinding;
 import com.arabdevelopers.shamelapp.databinding.DialogLanguageBinding;
 import com.arabdevelopers.shamelapp.language.Language;
+import com.arabdevelopers.shamelapp.models.NotFireModel;
 import com.arabdevelopers.shamelapp.models.NotificationCountModel;
 import com.arabdevelopers.shamelapp.models.UserModel;
 import com.arabdevelopers.shamelapp.preferences.Preferences;
@@ -34,6 +35,11 @@ import com.arabdevelopers.shamelapp.share.Common;
 import com.arabdevelopers.shamelapp.tags.Tags;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -97,7 +103,9 @@ public class HomeActivity extends AppCompatActivity {
 
         if (userModel!=null)
         {
+            EventBus.getDefault().register(this);
             getNotificationCount();
+            updateTokenFireBase();
 
         }
 
@@ -301,6 +309,15 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void listenToNotifications(NotFireModel notFireModel)
+    {
+        if (userModel!=null){
+            getNotificationCount();
+
+        }
+    }
+
     @Override
     public void onBackPressed() {
         if (fragment_main != null && fragment_main.isAdded() && fragment_main.isVisible()) {
@@ -315,6 +332,61 @@ public class HomeActivity extends AppCompatActivity {
             displayFragmentMain();
         }
     }
+
+    private void updateTokenFireBase() {
+
+        FirebaseInstanceId.getInstance()
+                .getInstanceId().addOnCompleteListener(task -> {
+            if (task.isSuccessful())
+            {
+                String token = task.getResult().getToken();
+
+                try {
+
+                    Api.getService(Tags.base_url)
+                            .updateToken(token,userModel.getId(),1)
+                            .enqueue(new Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    if (response.isSuccessful() && response.body() != null )
+                                    {
+                                        Log.e("token","updated successfully");
+                                    } else {
+                                        try {
+
+                                            Log.e("errorToken", response.code() + "_" + response.errorBody().string());
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    try {
+
+                                        if (t.getMessage() != null) {
+                                            Log.e("errorToken2", t.getMessage());
+                                            if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                                Toast.makeText(HomeActivity.this, R.string.something, Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(HomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            });
+                } catch (Exception e) {
+
+
+                }
+
+            }
+        });
+    }
+
 
     public void logout()
     {
@@ -417,7 +489,7 @@ public class HomeActivity extends AppCompatActivity {
                     public void onFailure(Call<NotificationCountModel> call, Throwable t) {
                         try {
                             if (t.getMessage() != null) {
-                                Log.e("error", t.getMessage() + "__");
+                                Log.e("error_not_code", t.getMessage() + "__");
 
                                 if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
                                     Toast.makeText(HomeActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
@@ -533,4 +605,12 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this))
+        {
+            EventBus.getDefault().unregister(this);
+        }
+    }
 }
