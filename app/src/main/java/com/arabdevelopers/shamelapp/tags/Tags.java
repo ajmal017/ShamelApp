@@ -1,7 +1,7 @@
 package com.arabdevelopers.shamelapp.tags;
 
 public class Tags {
-    public static String base_url = "http://shamel.creativeshare.sa/";
+    public static String base_url = "http://shamlq8.com/";
     public static final String IMAGE_URL= base_url+"storage/";
     public static final String session_login = "login";
     public static final String session_logout = "logout";
