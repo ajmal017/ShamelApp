@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.arabdevelopers.shamelapp.R;
+import com.arabdevelopers.shamelapp.activities_fragments.activity_ads.AdsActivity;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_home.HomeActivity;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_sub_department.SubDepartmentActivity;
 import com.arabdevelopers.shamelapp.adapters.MainDepartmentAdapter;
@@ -186,7 +187,7 @@ public class Fragment_Main extends Fragment {
     }
 
     public void setItemData(DepartmentModel departmentModel) {
-        Intent intent = new Intent(activity, SubDepartmentActivity.class);
+        Intent intent = new Intent(activity, AdsActivity.class);
         intent.putExtra("data",departmentModel);
         startActivity(intent);
     }

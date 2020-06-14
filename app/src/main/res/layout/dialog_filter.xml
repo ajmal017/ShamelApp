@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    >
+    <LinearLayout
+         android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_window_bg">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="@string/filter"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/gray2"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sub_department"
+            android:layout_marginTop="8dp"
+            android:textSize="15sp"
+            android:textColor="@color/gray6"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/small_gray_rounded"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            >
+            <Spinner
+                android:id="@+id/subSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                />
+        </FrameLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nationality"
+            android:layout_marginTop="8dp"
+            android:textSize="15sp"
+            android:textColor="@color/gray6"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/small_gray_rounded"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            >
+            <Spinner
+                android:id="@+id/nationalitySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                />
+        </FrameLayout>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/city"
+            android:layout_marginTop="8dp"
+            android:textSize="15sp"
+            android:textColor="@color/gray6"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/small_gray_rounded"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            >
+            <Spinner
+                android:id="@+id/citySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                />
+        </FrameLayout>
+
+
+        <Button
+            android:id="@+id/btnFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:text="@string/filter"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"/>
+    </LinearLayout>
+</layout>

@@ -2,6 +2,7 @@ package com.arabdevelopers.shamelapp.models;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.databinding.BaseObservable;
@@ -19,6 +20,8 @@ public class AddAdsModel extends BaseObservable {
     private int main_dept_id;
     private int sub_dept_id;
     private String address;
+    private String nationality;
+    private String city;
     private double lat;
     private double lng;
 
@@ -29,12 +32,26 @@ public class AddAdsModel extends BaseObservable {
 
     public boolean isDataValid(Context context)
     {
+        Log.e("image",image.toString());
+        Log.e("name",name);
+        Log.e("details",details);
+        Log.e("main_dept_id",main_dept_id+"_");
+        Log.e("sub_dept_id",sub_dept_id+"_");
+        Log.e("address",address);
+        Log.e("nationality",nationality);
+        Log.e("city",city);
+        Log.e("lat",lat+"-");
+        Log.e("lng",lng+"_");
+
+
         if (image!=null&&
                 !name.isEmpty()&&
                 !details.isEmpty()&&
                 main_dept_id!=0&&
                 sub_dept_id!=0&&
                 !address.isEmpty()&&
+                !nationality.isEmpty()&&
+                !city.isEmpty()&&
                 lat!=0.0&&
                 lng!=0.0
         ){
@@ -67,6 +84,17 @@ public class AddAdsModel extends BaseObservable {
                 Toast.makeText(context, R.string.ch_sub_dpt, Toast.LENGTH_SHORT).show();
             }
 
+
+            if (nationality.isEmpty())
+            {
+                Toast.makeText(context, R.string.ch_nat, Toast.LENGTH_SHORT).show();
+            }
+
+            if (city.isEmpty())
+            {
+                Toast.makeText(context, R.string.ch_city, Toast.LENGTH_SHORT).show();
+            }
+
             if (details.isEmpty())
             {
                 error_details.set(context.getString(R.string.field_required));
@@ -92,6 +120,8 @@ public class AddAdsModel extends BaseObservable {
         setName("");
         setDetails("");
         setAddress("");
+        setCity("");
+        setNationality("");
         setLat(0.0);
         setLng(0.0);
         setMain_dept_id(0);
@@ -168,5 +198,21 @@ public class AddAdsModel extends BaseObservable {
 
     public void setLng(double lng) {
         this.lng = lng;
+    }
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }

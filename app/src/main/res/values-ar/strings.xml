@@ -101,4 +101,10 @@
     <string name="ch_main_dept">إختر القسم الرئيسي</string>
     <string name="ch_sub_dpt">إختر القسم الفرعي</string>
     <string name="show">عرض</string>
+    <string name="nationality">الجنسية</string>
+    <string name="city">المدينة</string>
+    <string name="ch_nat">إختر الجنسية</string>
+    <string name="ch_city">إختر المدينة</string>
+    <string name="my_ads">إعلاناتي</string>
+    <string name="filter">تصفية</string>
 </resources>

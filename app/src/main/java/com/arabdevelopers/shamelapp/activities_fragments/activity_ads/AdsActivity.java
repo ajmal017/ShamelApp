@@ -1,11 +1,15 @@
 package com.arabdevelopers.shamelapp.activities_fragments.activity_ads;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,18 +21,28 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.arabdevelopers.shamelapp.R;
+import com.arabdevelopers.shamelapp.activities_fragments.activity_add_ads.AddAdsActivity;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_ads_details.AdsDetailsActivity;
+import com.arabdevelopers.shamelapp.activities_fragments.activity_sub_department.SubDepartmentActivity;
 import com.arabdevelopers.shamelapp.adapters.AdsAdapter;
+import com.arabdevelopers.shamelapp.adapters.SpinnerNationalityCityAdapter;
+import com.arabdevelopers.shamelapp.adapters.SpinnerSubDepartmentAdapter;
 import com.arabdevelopers.shamelapp.databinding.ActivityAdsBinding;
+import com.arabdevelopers.shamelapp.databinding.DialogAlertBinding;
+import com.arabdevelopers.shamelapp.databinding.DialogFilterBinding;
 import com.arabdevelopers.shamelapp.interfaces.Listeners;
 import com.arabdevelopers.shamelapp.language.Language;
 import com.arabdevelopers.shamelapp.models.AdsDataModel;
 import com.arabdevelopers.shamelapp.models.AdsModel;
 import com.arabdevelopers.shamelapp.models.DepartmentModel;
 import com.arabdevelopers.shamelapp.models.LikeDislikeModel;
+import com.arabdevelopers.shamelapp.models.MainDeptSubDeptDataModel;
+import com.arabdevelopers.shamelapp.models.Nationality_City_Data_Model;
+import com.arabdevelopers.shamelapp.models.SubDeptSliderData;
 import com.arabdevelopers.shamelapp.models.UserModel;
 import com.arabdevelopers.shamelapp.preferences.Preferences;
 import com.arabdevelopers.shamelapp.remote.Api;
+import com.arabdevelopers.shamelapp.share.Common;
 import com.arabdevelopers.shamelapp.tags.Tags;
 
 import java.io.IOException;
@@ -53,6 +67,19 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
     private Preferences preferences;
     private LinearLayoutManager manager;
     private int selected_pos = -1;
+    private String filter_city=null;
+    private String filter_nationality = null;
+    private String filter_sub_department = null;
+
+    private String filter_city_dialog=null;
+    private String filter_nationality_dialog = null;
+    private String filter_sub_department_dialog = null;
+    private List<String> cityList ,nationalityList;
+    private SpinnerNationalityCityAdapter cityAdapter,nationalityAdapter;
+    private SpinnerSubDepartmentAdapter subAdapter;
+    private List<DepartmentModel> subList;
+    private List<DepartmentModel> departmentModelList;
+    private AlertDialog dialog;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -81,6 +108,15 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
         preferences = Preferences.getInstance();
         userModel = preferences.getUserData(this);
         adsModelList = new ArrayList<>();
+        departmentModelList = new ArrayList<>();
+        cityList = new ArrayList<>();
+        nationalityList = new ArrayList<>();
+        subList = new ArrayList<>();
+
+        cityList.add(getString(R.string.choose));
+        nationalityList.add(getString(R.string.choose));
+        subList.add(new DepartmentModel(0, getString(R.string.choose)));
+
         Paper.init(this);
         lang = Paper.book().read("lang", Locale.getDefault().getLanguage());
         binding.setBackListener(this);
@@ -109,7 +145,19 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
                 }
             }
         });
+
+        createFilterDialogAlert();
+
+        binding.imageFilter.setOnClickListener(v -> {
+
+            dialog.show();
+
+
+        });
         getData();
+        getCity();
+        getNationality();
+        getSubDepartment();
     }
 
 
@@ -122,7 +170,55 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
             user_id = String.valueOf(userModel.getId());
         }
 
+        adsModelList.clear();
+        adapter.notifyDataSetChanged();
+        binding.progBar.setVisibility(View.VISIBLE);
+        binding.tvNoData.setVisibility(View.GONE);
+
         Api.getService(Tags.base_url)
+                .filter("on",20,1,user_id,filter_city,filter_nationality,filter_sub_department,departmentModel.getId())
+                .enqueue(new Callback<AdsDataModel>() {
+                    @Override
+                    public void onResponse(Call<AdsDataModel> call, Response<AdsDataModel> response) {
+                        binding.progBar.setVisibility(View.GONE);
+                        if (response.isSuccessful())
+                        {
+                            if (response.body()!=null&&response.body().getData()!=null)
+                            {
+                                adsModelList.addAll(response.body().getData().getData());
+                                if (adsModelList.size()>0)
+                                {
+                                    adapter.notifyDataSetChanged();
+                                    binding.tvNoData.setVisibility(View.GONE);
+                                }else
+                                {
+                                    binding.tvNoData.setVisibility(View.VISIBLE);
+
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AdsDataModel> call, Throwable t) {
+                        try {
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });
+
+       /* Api.getService(Tags.base_url)
                 .getAds("on",20,1,departmentModel.getId(),user_id)
                 .enqueue(new Callback<AdsDataModel>() {
                     @Override
@@ -164,7 +260,7 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
                             Log.e("Error",e.getMessage()+"__");
                         }
                     }
-                });
+                });*/
 
 
     }
@@ -178,7 +274,59 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
             user_id = String.valueOf(userModel.getId());
         }
 
+
         Api.getService(Tags.base_url)
+                .filter("on",20,page,user_id,filter_city,filter_nationality,filter_sub_department,departmentModel.getId())
+                .enqueue(new Callback<AdsDataModel>() {
+                    @Override
+                    public void onResponse(Call<AdsDataModel> call, Response<AdsDataModel> response) {
+                        isLoading = false;
+                        adsModelList.remove(adsModelList.size()-1);
+                        adapter.notifyItemRemoved(adsModelList.size()-1);
+
+                        if (response.isSuccessful())
+                        {
+                            if (response.body()!=null&&response.body().getData()!=null)
+                            {
+                                if (response.body().getData().getData().size()>0)
+                                {
+                                    int oldPos = adsModelList.size()-1;
+                                    adsModelList.addAll(response.body().getData().getData());
+                                    adapter.notifyItemRangeChanged(oldPos,adsModelList.size());
+                                    current_page = response.body().getData().getCurrent_page();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AdsDataModel> call, Throwable t) {
+                        try {
+                            isLoading = false;
+                            if (adsModelList.get(adsModelList.size()-1)==null)
+                            {
+                                adsModelList.remove(adsModelList.size()-1);
+                                adapter.notifyItemRemoved(adsModelList.size()-1);
+                            }
+
+
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });
+
+        /*Api.getService(Tags.base_url)
                 .getAds("on",20,page,departmentModel.getId(),user_id)
                 .enqueue(new Callback<AdsDataModel>() {
                     @Override
@@ -213,6 +361,139 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
                             }
 
 
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
+                            Log.e("Error",e.getMessage()+"__");
+                        }
+                    }
+                });*/
+    }
+
+
+    private void getCity() {
+        Api.getService(Tags.base_url)
+                .getCity()
+                .enqueue(new Callback<Nationality_City_Data_Model>() {
+                    @Override
+                    public void onResponse(Call<Nationality_City_Data_Model> call, Response<Nationality_City_Data_Model> response) {
+                        if (response.isSuccessful()) {
+                            Log.e("1","1");
+                            if (response.body()!=null&&response.body().getData().getCities()!=null)
+                            {
+                                Log.e("2","2");
+
+                                cityList.addAll(response.body().getData().getCities());
+                                runOnUiThread(() -> {
+                                    cityAdapter.notifyDataSetChanged();
+                                });
+                            }
+
+
+                        } else {
+                            if (response.code() == 500) {
+                                Toast.makeText(AdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(AdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Nationality_City_Data_Model> call, Throwable t) {
+                        try {
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
+    }
+
+    private void getNationality() {
+
+        Api.getService(Tags.base_url)
+                .getNationality()
+                .enqueue(new Callback<Nationality_City_Data_Model>() {
+                    @Override
+                    public void onResponse(Call<Nationality_City_Data_Model> call, Response<Nationality_City_Data_Model> response) {
+                        if (response.isSuccessful()) {
+
+                            if (response.body()!=null&&response.body().getData().getNationals()!=null)
+                            {
+                                nationalityList.addAll(response.body().getData().getNationals());
+                                runOnUiThread(() -> {
+                                    nationalityAdapter.notifyDataSetChanged();
+                                });
+                            }
+
+                        } else {
+                            if (response.code() == 500) {
+                                Toast.makeText(AdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(AdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Nationality_City_Data_Model> call, Throwable t) {
+                        try {
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
+    }
+
+
+    private void getSubDepartment()
+    {
+        Api.getService(Tags.base_url)
+                .getSliders_SubDepartments(departmentModel.getId())
+                .enqueue(new Callback<SubDeptSliderData>() {
+                    @Override
+                    public void onResponse(Call<SubDeptSliderData> call, Response<SubDeptSliderData> response) {
+
+                        if (response.isSuccessful())
+                        {
+                            if (response.body()!=null&&response.body().getData()!=null)
+                            {
+                                subList.addAll(response.body().getData().getSub_departments());
+
+                                runOnUiThread(() -> subAdapter.notifyDataSetChanged());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SubDeptSliderData> call, Throwable t) {
+                        try {
                             if (t.getMessage() != null) {
                                 Log.e("error", t.getMessage() + "__");
 
@@ -379,6 +660,93 @@ public class AdsActivity extends AppCompatActivity implements Listeners.BackList
             }
 
 
+    }
+
+
+    private void createFilterDialogAlert()
+    {
+
+        dialog = new AlertDialog.Builder(this)
+                .create();
+
+        DialogFilterBinding binding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_filter, null, false);
+
+        subAdapter = new SpinnerSubDepartmentAdapter(subList, this);
+        binding.subSpinner.setAdapter(subAdapter);
+
+        binding.subSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position==0){
+                    filter_sub_department_dialog = null;
+                }else {
+                    filter_sub_department_dialog = String.valueOf(subList.get(position).getId());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        cityAdapter = new SpinnerNationalityCityAdapter(cityList,this);
+        binding.citySpinner.setAdapter(cityAdapter);
+
+        binding.citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position==0){
+                    filter_city_dialog = null;
+                }else {
+                    filter_city_dialog = cityList.get(position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
+        nationalityAdapter = new SpinnerNationalityCityAdapter(nationalityList,this);
+        binding.nationalitySpinner.setAdapter(nationalityAdapter);
+
+        binding.nationalitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position==0){
+                    filter_nationality_dialog = null;
+                }else {
+                    filter_nationality_dialog = nationalityList.get(position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        binding.btnFilter.setOnClickListener(v -> {
+
+            filter_city = filter_city_dialog;
+            filter_nationality = filter_nationality_dialog;
+            filter_sub_department = filter_sub_department_dialog;
+            dialog.dismiss();
+            getData();
+
+
+        });
+
+
+        dialog.getWindow().getAttributes().windowAnimations = R.style.dialog_congratulation_animation;
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_window_bg);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setView(binding.getRoot());
     }
 
     @Override

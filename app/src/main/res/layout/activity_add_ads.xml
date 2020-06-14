@@ -216,6 +216,51 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/nationality"
+                        android:layout_marginTop="8dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/gray6"
+                        />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/small_gray_rounded"
+                        android:layout_marginTop="5dp">
+                        <Spinner
+                            android:id="@+id/nationalitySpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            />
+                    </FrameLayout>
+
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/city"
+                        android:layout_marginTop="8dp"
+                        android:textSize="15sp"
+                        android:textColor="@color/gray6"
+                        />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/small_gray_rounded"
+                        android:layout_marginTop="5dp">
+                        <Spinner
+                            android:id="@+id/citySpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            />
+                    </FrameLayout>
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="@string/ads_details"
                         android:layout_marginTop="10dp"
                         android:textSize="15sp"

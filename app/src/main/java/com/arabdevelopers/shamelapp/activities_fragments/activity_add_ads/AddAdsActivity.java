@@ -33,6 +33,7 @@ import androidx.databinding.DataBindingUtil;
 import com.arabdevelopers.shamelapp.R;
 import com.arabdevelopers.shamelapp.activities_fragments.FragmentMapTouchListener;
 import com.arabdevelopers.shamelapp.adapters.SpinnerDepartmentAdapter;
+import com.arabdevelopers.shamelapp.adapters.SpinnerNationalityCityAdapter;
 import com.arabdevelopers.shamelapp.adapters.SpinnerSubDepartmentAdapter;
 import com.arabdevelopers.shamelapp.databinding.ActivityAddAdsBinding;
 import com.arabdevelopers.shamelapp.interfaces.Listeners;
@@ -40,6 +41,7 @@ import com.arabdevelopers.shamelapp.language.Language;
 import com.arabdevelopers.shamelapp.models.AddAdsModel;
 import com.arabdevelopers.shamelapp.models.DepartmentModel;
 import com.arabdevelopers.shamelapp.models.MainDeptSubDeptDataModel;
+import com.arabdevelopers.shamelapp.models.Nationality_City_Data_Model;
 import com.arabdevelopers.shamelapp.models.PlaceGeocodeData;
 import com.arabdevelopers.shamelapp.models.PlaceMapDetailsData;
 import com.arabdevelopers.shamelapp.models.UserModel;
@@ -106,10 +108,13 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
     private SpinnerDepartmentAdapter mainAdapter;
     private SpinnerSubDepartmentAdapter subAdapter;
     private List<MainDeptSubDeptDataModel.Data> mainList;
+    private List<String> cityList ,nationalityList;
+    private SpinnerNationalityCityAdapter cityAdapter,nationalityAdapter;
     private List<DepartmentModel> subList;
     private AddAdsModel addAdsModel;
     private UserModel.User userModel;
     private Preferences preferences;
+
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -126,6 +131,11 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void initView() {
+        cityList = new ArrayList<>();
+        nationalityList = new ArrayList<>();
+        cityList.add(getString(R.string.choose));
+        nationalityList.add(getString(R.string.choose));
+
         preferences = Preferences.getInstance();
         userModel = preferences.getUserData(this);
         mainList = new ArrayList<>();
@@ -160,6 +170,12 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
         subAdapter = new SpinnerSubDepartmentAdapter(subList, this);
         binding.subSpinner.setAdapter(subAdapter);
 
+        cityAdapter = new SpinnerNationalityCityAdapter(cityList,this);
+        binding.citySpinner.setAdapter(cityAdapter);
+
+
+        nationalityAdapter = new SpinnerNationalityCityAdapter(nationalityList,this);
+        binding.nationalitySpinner.setAdapter(nationalityAdapter);
 
         binding.mainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -205,12 +221,147 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
         });
 
 
+
+        binding.citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0) {
+                    addAdsModel.setCity("");
+                } else {
+                    addAdsModel.setCity(cityList.get(i));
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        binding.nationalitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0) {
+                    addAdsModel.setNationality("");
+                } else {
+                    addAdsModel.setNationality(nationalityList.get(i));
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+
         ////////////////////////////////////////////////
 
 
         updateUI();
         CheckPermission();
         getData();
+        getCity();
+        getNationality();
+
+    }
+
+
+
+    private void getCity() {
+        Api.getService(Tags.base_url)
+                .getCity()
+                .enqueue(new Callback<Nationality_City_Data_Model>() {
+                    @Override
+                    public void onResponse(Call<Nationality_City_Data_Model> call, Response<Nationality_City_Data_Model> response) {
+                        if (response.isSuccessful()) {
+                            Log.e("1","1");
+                            if (response.body()!=null&&response.body().getData().getCities()!=null)
+                            {
+                                Log.e("2","2");
+
+                                cityList.addAll(response.body().getData().getCities());
+                                runOnUiThread(() -> {
+                                    cityAdapter.notifyDataSetChanged();
+                                });
+                            }
+
+
+                        } else {
+                            if (response.code() == 500) {
+                                Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Nationality_City_Data_Model> call, Throwable t) {
+                        try {
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
+    }
+
+    private void getNationality() {
+
+        Api.getService(Tags.base_url)
+                .getNationality()
+                .enqueue(new Callback<Nationality_City_Data_Model>() {
+                    @Override
+                    public void onResponse(Call<Nationality_City_Data_Model> call, Response<Nationality_City_Data_Model> response) {
+                        if (response.isSuccessful()) {
+
+                            if (response.body()!=null&&response.body().getData().getNationals()!=null)
+                            {
+                                nationalityList.addAll(response.body().getData().getNationals());
+                                runOnUiThread(() -> {
+                                    nationalityAdapter.notifyDataSetChanged();
+                                });
+                            }
+
+                        } else {
+                            if (response.code() == 500) {
+                                Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Nationality_City_Data_Model> call, Throwable t) {
+                        try {
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
     }
 
     private void getData() {
@@ -332,6 +483,7 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
                             if (response.body().getCandidates().size() > 0) {
 
                                 address = response.body().getCandidates().get(0).getFormatted_address().replace("Unnamed Road,", "");
+                                Log.e("add",address+"_");
                                 binding.edtSearch.setText(address + "");
                                 AddMarker(response.body().getCandidates().get(0).getGeometry().getLocation().getLat(), response.body().getCandidates().get(0).getGeometry().getLocation().getLng());
                             }
@@ -362,8 +514,10 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void getGeoData(final double lat, double lng) {
+
         binding.progBar.setVisibility(View.VISIBLE);
         String location = lat + "," + lng;
+        Log.e("lat",lat+"_"+lng);
         Api.getService("https://maps.googleapis.com/maps/api/")
                 .getGeoData(location, lang, getString(R.string.map_key))
                 .enqueue(new Callback<PlaceGeocodeData>() {
@@ -375,6 +529,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
 
                             if (response.body().getResults().size() > 0) {
                                 address = response.body().getResults().get(0).getFormatted_address().replace("Unnamed Road,", "");
+                                Log.e("add",address+"_");
+
                                 binding.edtSearch.setText(address + "");
                                 addAdsModel.setAddress(address);
                                 addAdsModel.setLat(lat);
@@ -409,6 +565,8 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
 
         this.lat = lat;
         this.lng = lng;
+        addAdsModel.setLat(lat);
+        addAdsModel.setLng(lng);
 
         if (marker == null) {
             marker = mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
@@ -659,6 +817,9 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
         RequestBody user_id_part = Common.getRequestBodyText(String.valueOf(userModel.getId()));
         RequestBody details_part = Common.getRequestBodyText(addAdsModel.getDetails());
         RequestBody address_part = Common.getRequestBodyText(addAdsModel.getAddress());
+        RequestBody city_part = Common.getRequestBodyText(addAdsModel.getCity());
+        RequestBody nationality_part = Common.getRequestBodyText(addAdsModel.getNationality());
+
         RequestBody lat_part = Common.getRequestBodyText(String.valueOf(addAdsModel.getLat()));
         RequestBody lng_part = Common.getRequestBodyText(String.valueOf(addAdsModel.getLng()));
 
@@ -666,7 +827,7 @@ public class AddAdsActivity extends AppCompatActivity implements OnMapReadyCallb
 
 
         Api.getService(Tags.base_url)
-                .addAds("Bearer " + userModel.getToken(), name_part, dept_id_part, sub_dept_id_part, user_id_part, details_part, lat_part, lng_part, address_part, image)
+                .addAds("Bearer " + userModel.getToken(), name_part, dept_id_part, sub_dept_id_part, user_id_part, details_part, lat_part, lng_part, address_part,city_part,nationality_part, image)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

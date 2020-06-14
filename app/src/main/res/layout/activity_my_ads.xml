@@ -67,22 +67,12 @@
                     android:layout_marginEnd="5dp"
                     android:clickable="false"
                     android:longClickable="false"
-                    android:text="@{title}"
+                    android:text="@string/my_ads"
                     android:textColor="@color/white"
                     android:textSize="15sp"
 
                     />
             </LinearLayout>
-            <ImageView
-                android:id="@+id/imageFilter"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="end"
-                android:src="@drawable/ic_filter"
-                android:tint="@color/white"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                />
         </androidx.appcompat.widget.Toolbar>
 
 

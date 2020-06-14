@@ -22,10 +22,14 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="m">
-        <activity android:name=".activities_fragments.activity_notification.NotificationActivity"
+        <activity android:name=".activities_fragments.activity_my_ads.MyAdsActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             />
+        <activity
+            android:name=".activities_fragments.activity_notification.NotificationActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
             android:name=".activities_fragments.activity_ads.AdsActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"

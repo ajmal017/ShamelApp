@@ -6,6 +6,7 @@ import com.arabdevelopers.shamelapp.models.AppDataModel;
 import com.arabdevelopers.shamelapp.models.LikeDislikeModel;
 import com.arabdevelopers.shamelapp.models.MainDeptSliderData;
 import com.arabdevelopers.shamelapp.models.MainDeptSubDeptDataModel;
+import com.arabdevelopers.shamelapp.models.Nationality_City_Data_Model;
 import com.arabdevelopers.shamelapp.models.NotificationCountModel;
 import com.arabdevelopers.shamelapp.models.NotificationDataModel;
 import com.arabdevelopers.shamelapp.models.PlaceGeocodeData;
@@ -83,6 +84,14 @@ public interface Service {
     );
 
 
+    @GET("api/advertisement-by-user_id")
+    Call<AdsDataModel> getMyAds(@Query("pagination_status") String pagination_status,
+                                @Query("per_link_") int per_link,
+                                @Query("page") int page,
+                                @Query("user_id") int user_id
+    );
+
+
     @FormUrlEncoded
     @POST("api/like-dislike-action")
     Call<LikeDislikeModel> likeDislike(@Header("Authorization") String token,
@@ -105,6 +114,8 @@ public interface Service {
                               @Part("latitude") RequestBody latitude,
                               @Part("longitude") RequestBody longitude,
                               @Part("address") RequestBody address,
+                              @Part("city") RequestBody city,
+                              @Part("nationality") RequestBody nationality,
                               @Part MultipartBody.Part image
     );
 
@@ -152,15 +163,37 @@ public interface Service {
     );
 
 
-
-
-
     @FormUrlEncoded
     @POST("api/firebase-tokens")
     Call<ResponseBody> updateToken(@Field("firebase_token") String token,
                                    @Field("user_id") int user_id,
                                    @Field("software_type") int soft_type
 
+    );
+
+
+    @GET("api/cities")
+    Call<Nationality_City_Data_Model> getCity();
+
+    @GET("api/nationals")
+    Call<Nationality_City_Data_Model> getNationality();
+
+
+    @FormUrlEncoded
+    @POST("api/delete-adv")
+    Call<ResponseBody> deleteAds(@Header("Authorization") String token,
+                                 @Field("advertisement_id") int id
+    );
+
+    @GET("api/advertisements-filter")
+    Call<AdsDataModel> filter(@Query("pagination_status") String pagination_status,
+                              @Query("per_link_") int per_link,
+                              @Query("page") int page,
+                              @Query("user_id") String user_id,
+                              @Query("city") String city,
+                              @Query("nationality") String nationality,
+                              @Query("sub_department_id") String sub_department_id,
+                              @Query("department_id") int department_id
     );
 
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Shamel</string>
-    <string name="map_key2">AIzaSyDz07XWgRsDTQtmA4IOvx-fSIc1d_Wrk9c</string>
-    <string name="map_key">AIzaSyArjmbYWTWZhDFFtPOLRLKYwjtBDkOEGrY</string>
+    <string name="map_key2">AIzaSyC4l5QxL27z4w0uuD_5X3g0IRhaUdvb0Q4</string>
+    <string name="map_key">AIzaSyC4l5QxL27z4w0uuD_5X3g0IRhaUdvb0Q4</string>
     <string name="home">Home</string>
     <string name="notifications">Notifications</string>
     <string name="more">More</string>
@@ -95,4 +95,10 @@
     <string name="ch_main_dept">Choose main department</string>
     <string name="ch_sub_dpt">Choose sub department</string>
     <string name="show">Show</string>
+    <string name="nationality">Nationality</string>
+    <string name="city">City</string>
+    <string name="ch_nat">Choose Nationality</string>
+    <string name="ch_city">Choose City</string>
+    <string name="my_ads">My Ads</string>
+    <string name="filter">Filter</string>
 </resources>

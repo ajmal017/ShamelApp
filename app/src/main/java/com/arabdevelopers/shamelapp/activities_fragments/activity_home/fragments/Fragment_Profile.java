@@ -1,5 +1,6 @@
 package com.arabdevelopers.shamelapp.activities_fragments.activity_home.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.arabdevelopers.shamelapp.R;
 import com.arabdevelopers.shamelapp.activities_fragments.activity_home.HomeActivity;
+import com.arabdevelopers.shamelapp.activities_fragments.activity_my_ads.MyAdsActivity;
 import com.arabdevelopers.shamelapp.databinding.FragmentProfileBinding;
 import com.arabdevelopers.shamelapp.models.UserModel;
 import com.arabdevelopers.shamelapp.preferences.Preferences;
@@ -54,6 +56,11 @@ public class Fragment_Profile extends Fragment {
         binding.setUserModel(userModel);
         binding.setLang(lang);
 
+
+        binding.btnMyAds.setOnClickListener(v -> {
+            Intent intent = new Intent(activity, MyAdsActivity.class);
+            startActivity(intent);
+        });
 
     }
 
